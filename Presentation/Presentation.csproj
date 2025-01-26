@@ -19,4 +19,8 @@
     <ItemGroup>
       <ProjectReference Include="..\WebFramework\WebFramework.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\uploads\" />
+    </ItemGroup>
 </Project>

@@ -1,7 +1,29 @@
+using Common;
+using Data.Contracts;
+using Data.Repositories;
+using Data.Reprositories;
+using DTO.CustomMapping;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.FileProviders;
+using Services.DataInitializer;
+using WebFramework.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+var siteSettings = builder.Configuration.GetSection(nameof(SiteSettings)).Get<SiteSettings>();
+builder.Services.Configure<SiteSettings>(builder.Configuration.GetSection(nameof(SiteSettings)));
+
+builder.Services.AddControllersWithViews(options => { options.Filters.Add(new AuthorizeFilter());});
+builder.Services.AddDbContext(builder.Configuration);
+builder.Services.AddCustomIdentity(siteSettings.IdentitySettings);
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IDataInitializer, UserDataInitializer>();
+
+builder.Services.InitializeAutoMapper();
 
 var app = builder.Build();
 
@@ -14,8 +36,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -25,5 +49,12 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = "/uploads"
+});
 
 app.Run();
