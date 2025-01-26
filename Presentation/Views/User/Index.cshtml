@@ -1,0 +1,172 @@
+﻿@using Common.Utilities
+@model IEnumerable<DTO.UserListDto>
+
+@{
+    ViewData["Title"] = "کاربران";
+}
+
+<section class="m-0 content">
+    <!-- Breadcrum -->
+    <div class=" w-100 d-flex flex-column justify-content-start page-title-container">
+        <h1 class="page-title text-secondary">داشبورد کاربر</h1>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-action="Index" asp-controller="Home" class="d-flex align-items-center">
+                    <i
+                        class="zmdi zmdi-home mx-1 text-primary">
+                    </i>داشبورد
+                </a>
+            </li>
+            <li class="breadcrumb-item active">لیست کاربران</li>
+        </ul>
+    </div>
+    <div class="row">
+        <h1 class="page-title text-secondary text-start w-100">کاربران سایت</h1>
+        <div class="table-responsive">
+            <table class="table bg-white custom-rounded t-24">
+                <thead>
+                <tr class="text-center">
+                    <th scope="col">کاربر</th>
+                    <th scope="col">مشاور</th>
+                    <th scope="col">نقش</th>
+                    <th scope="col">وضعیت</th>
+                    <th scope="col">تایخ ثبت نام</th>
+                    <th scope="col">عملیات</th>
+                </tr>
+                </thead>
+                <tbody class="text-center">
+                @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div
+                                        class="d-flex flex-column justify-content-start align-items-start mr-16 text-right">
+                                        <p class="mb-0">@Html.DisplayFor(modelItem => item.FullName)</p>
+                                        <p class="mb-0 auth-number text-default fw-normal">@Html.DisplayFor(modelItem => item.PhoneNumber)</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>مشاور</td>
+                            <td>
+                                <span class="tags">تایید شده</span>
+                                @item.Status.ToDisplay()
+                            </td>
+                            <td>
+                                @Html.ActionLink("ویرایش", "Edit", "User", new { id = item.Id }) |
+                                @Html.ActionLink("حذف", "Delete", new { id = item.Id })
+                            </td>
+                        </tr>
+                    }
+                <tr>
+                    
+                    <td>69</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="custom-drop-btn btn btn-secondary dropdown-toggle" type="button"
+                                    id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                مشاور دوم
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <a class="dropdown-item" href="#">فاطمه</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">زهرا</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">مریم</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">نرگس</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">سارا</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">لیلا</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td>1402/03/03</td>
+                    <td>
+                        <span class="tags">تایید شده</span>
+                    </td>
+                    <td>
+                        <button type="button" class="action-tag" data-toggle="modal"
+                                data-target="#Removemodal">
+                            حذف
+                        </button>
+                    </td>
+                    <!-- Modal -->
+                    <div class="modal fade" id="Removemodal" tabindex="-1" role="dialog"
+                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header text-center border-0 p-0">
+                                    <img src="./assets/img/remove.png" class="m-auto" alt="">
+                                </div>
+                                <div class="modal-body text-center border-0 p-0 border-end-0">
+                                    <h3>مطمعنی میخوای حذف کنی</h3>
+                                    <p class="t-16">
+                                        شما درحال حذف کاربر میلاد اعرابها هستید . آیا حذف انجام
+                                        شود؟
+                                    </p>
+                                </div>
+                                <div
+                                    class="modal-footer flex-row-reverse border-0 w-100 justify-content-center p-0">
+                                    <button type="button" class="btn custom-btn-secondary d-inline-block"
+                                            data-dismiss="modal">
+                                        لغو
+                                    </button>
+                                    <button type="button" class="btn custom-btn-danger d-inline-block">
+                                        بله
+                                        حذف کن
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<table class="table bg-white custom-rounded t-24">
+    <thead>
+    <tr class="text-center">
+        <th>
+            @Html.DisplayNameFor(model => model.FullName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody class="text-center">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @item.Status.ToDisplay()
+            </td>
+            <td>
+                @Html.ActionLink("ویرایش", "Edit", "User", new { id = item.Id }) |
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

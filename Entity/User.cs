@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Entity.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entity;
@@ -14,8 +12,6 @@ public class User : IdentityUser<int>, IEntity<int>
     public GenderType Gender { get; set; }
     public UserStatus Status { get; set; }
     public DateTimeOffset BirthDate { get; set; }
-    public Grade Grade { get; set; }
-    public FieldOfStudy FieldOfStudy { get; set; }
     public DateTimeOffset LastLoginDate { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
@@ -45,21 +41,4 @@ public enum UserStatus
 {
     [Display(Name = "فعال")] Active = 1,
     [Display(Name = "غیرفعال")] Disable = 0,
-}
-public enum Grade
-{
-    [Display(Name = "نهم")] Ninth = 9,
-    [Display(Name = "دهم")] Tenth,
-    [Display(Name = "یازدهم")] Eleventh,
-    [Display(Name = "دوازدهم")] Twelfth
-}
-
-public enum FieldOfStudy
-{
-    [Display(Name = "ریاضی")] Mathematics = 1,
-    [Display(Name = "انسانی")] Humanities,
-    [Display(Name = "تجربی")] Experimental,
-    [Display(Name = "هنر")] Art,
-    [Display(Name = "زبان")] Language,
-    [Display(Name = "فنی")] Technical,
 }

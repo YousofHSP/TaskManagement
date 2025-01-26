@@ -38,8 +38,6 @@ namespace Data.Migrations
                     Gender = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     BirthDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    Grade = table.Column<int>(type: "int", nullable: false),
-                    FieldOfStudy = table.Column<int>(type: "int", nullable: false),
                     LastLoginDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),

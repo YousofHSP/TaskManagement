@@ -15,17 +15,6 @@ public class RegisterDto
     [Required(ErrorMessage = "شماره موبایل اجباری است")]
     [StringLength(11,ErrorMessage = "شماره موبایل معتبر نیست")]
     public string PhoneNumber { get; set; }
-    
-    public int Year { get; set; }
-    
-    public int Month { get; set; }
-    
-    public int Day { get; set; }
-    [Required(ErrorMessage = "پایه تحصیلی اجباری است")]
-    public Grade Grade { get; set; }
-    [Required(ErrorMessage = "رشته تحصیلی اجباری است")]
-    public FieldOfStudy FieldOfStudy { get; set; }
-
 }
 
 public class LoginDto

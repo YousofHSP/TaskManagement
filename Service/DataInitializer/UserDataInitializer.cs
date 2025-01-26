@@ -19,13 +19,15 @@ public class UserDataInitializer: IDataInitializer
         {
             var passwordHasher = new PasswordHasher<User>();
             
-            var user = new User()
+            var user = new User
             {
                 UserName = "admin",
+                PhoneNumber = "09140758738",
                 Email = "admin@gmail.com",
                 NormalizedUserName = "ADMIN",
                 FullName = "yousof",
                 Gender = GenderType.Male,
+                SecurityStamp = Guid.NewGuid().ToString()
             };
             user.PasswordHash = passwordHasher.HashPassword(user, "1234");
             _userRepository.Add(user);

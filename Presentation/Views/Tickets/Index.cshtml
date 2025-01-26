@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Presentation.DTO.TicketDto>
+
+@{
+    ViewData["Title"] = "تیکت";
+}
+
+<h1>تیکت</h1>
+
+<p>
+    <a asp-action="Create">جدید</a>
+</p>
+<table class="table bg-white custom-rounded t-24">
+    <thead>
+        <tr class="text-center">
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Priority)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody class="text-center">
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.ActionLink("پاسخ", "Answer", new { id=item.Id })
+            </td>
+        </tr>
+}   
+    </tbody>
+</table>

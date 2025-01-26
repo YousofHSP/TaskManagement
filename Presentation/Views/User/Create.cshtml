@@ -1,0 +1,74 @@
+﻿@using Common.Utilities
+@using Entity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DTO.UserDto
+
+@{
+    ViewData["Title"] = "ایجاد کاربر";
+}
+<div class=" w-100 d-flex flex-column justify-content-start page-title-container">
+    <h1 class="page-title text-secondary">داشبورد کاربر</h1>
+    <ul class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-action="Index" asp-controller="Home" class="d-flex align-items-center">
+                <i
+                    class="zmdi zmdi-home mx-1 text-primary">
+                </i>داشبورد
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="Index" asp-controller="User" class="d-flex align-items-center">کاربران</a>
+        </li>
+        <li class="breadcrumb-item active">کاربر جدید</li>
+    </ul>
+</div>
+<form asp-action="Create" autocomplete="off">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="d-flex flex-column justify-content-start align-items-center">
+        <div class="card">
+            <img src="~/img/dr02.png" class="position-absolute form-img" alt="">
+            <div class="d-flex flex-column justify-content-start card-title-container">
+                <div class="card-title text-secondary"> کاربر جدید</div>
+                <p class="card-subtitle">جهت افزودن کاربر جدید فرم زیر را تکمیل نمایید</p>
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between w-100 t-24">
+                <div class="custom-form-control form-group position-relative w-50">
+                    <input asp-for="FullName" placeholder="@Html.DisplayNameFor(m => m.FullName)" class="form-control pr-16 my-2"/>
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="custom-form-control form-group position-relative w-50 mx-md-3">
+                    <input asp-for="Password" class="form-control pr-16 my-2"  placeholder="@Html.DisplayNameFor(m => m.Password)"/>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="custom-form-control form-group position-relative w-50">
+                    <input asp-for="PhoneNumber" class="form-control pr-16 my-2"  placeholder="@Html.DisplayNameFor(m => m.PhoneNumber)"/>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                
+            </div>
+            <div class="d-flex flex-column flex-md-row justify-content-between w-100">
+                <div class="custom-form-control form-group position-relative w-50">
+                    <select asp-for="Status" class="form-control pr-16 my-2">
+                        <option value="@UserStatus.Disable">@UserStatus.Disable.ToDisplay()</option>
+                        <option value="@UserStatus.Active">@UserStatus.Active.ToDisplay()</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="custom-form-control form-group position-relative w-50 me-md-3">
+                    <select asp-for="RoleName" asp-items="Model.Roles" class="form-control pr-16 my-2"></select>
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="custom-btn-primary t-24 form-submit p-16" value="ثبت نام کاربر جدید"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

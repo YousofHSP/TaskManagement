@@ -27,6 +27,8 @@ builder.Services.InitializeAutoMapper();
 
 var app = builder.Build();
 
+app.DataSeeder(app.Environment);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

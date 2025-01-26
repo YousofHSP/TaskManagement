@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using AutoMapper;
 using Entity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -18,29 +16,6 @@ public class UserDto : BaseDto<UserDto, User>
     [Display(Name = "شماره موبایل")]
     public string PhoneNumber { get; set; }
 
-    [Display(Name = "سال")]
-    [Required(ErrorMessage = "سال تولد اجباری است")]
-    [DataType(DataType.PhoneNumber)]
-    public int? Year { get; set; }
-
-    [Display(Name = "ماه")]
-    [Required(ErrorMessage = "ماه تولد اجباری است")]
-    [DataType(DataType.PhoneNumber)]
-    public int? Month { get; set; }
-
-    [Display(Name = "روز")]
-    [Required(ErrorMessage = "روز تولد اجباری است")]
-    [DataType(DataType.PhoneNumber)]
-    public int? Day { get; set; }
-
-    [Required(ErrorMessage = "پایه تحصیلی اجباری است")]
-    [Display(Name = "پایه تحصیلی")]
-    public Grade Grade { get; set; }
-
-    [Required(ErrorMessage = "رشته تحصیلی اجباری است")]
-    [Display(Name = "رشته تحصیلی")]
-    public FieldOfStudy FieldOfStudy { get; set; }
-
     [Display(Name = "وضعیت")]
     public UserStatus Status { get; set; }
     [DataType(DataType.Password)]
@@ -51,19 +26,6 @@ public class UserDto : BaseDto<UserDto, User>
     [Required(ErrorMessage= "نقش اجباری است")]
     public string RoleName { get; set; } = string.Empty;
     public List<SelectListItem>? Roles { get; set; }
-    protected override void CustomMappings(IMappingExpression<User, UserDto> mapping)
-    {
-        mapping.ForMember(
-            dest => dest.Year,
-            config => config.MapFrom(src => (new PersianCalendar()).GetYear(src.BirthDate.DateTime)));
-        mapping.ForMember(
-            dest => dest.Month,
-            config => config.MapFrom(src => (new PersianCalendar()).GetMonth(src.BirthDate.DateTime)));
-        mapping.ForMember(
-            dest => dest.Day,
-            config => config.MapFrom(src => (new PersianCalendar()).GetDayOfMonth(src.BirthDate.DateTime)));
-        base.CustomMappings(mapping);
-    }
 }
 
 public class UserCreateDto : UserDto

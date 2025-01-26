@@ -1,0 +1,54 @@
+﻿@using DTO
+@model LoginDto;
+@{
+    ViewData["Title"] = "ورود";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+<div class="container-fluid wrapper">
+    <div class="row d-flex align-items-center h-100">
+        <div class="col-sm-12 col-xl-3 d-flex justify-content-center align-items-center p-24">
+            <div class="card auth-shadow login-card position-relative order-1">
+                <img src="~/img/Rec01.png" alt="" class="position-absolute order-0 auth-rec1" />
+                <img src="~/img/Rec01.png" alt="" class="position-absolute order-0 auth-rec2" />
+                <img src="~/img/Rec01.png" alt="" class="position-absolute order-0 auth-rec1 bottom-0" />
+                <div class="card-header bg-white border-0 p-0">
+                    <div class="card-title text-center">
+                        <h1>وارد حسابت شو</h1>
+                        <p>
+                            با ما وارد دنیای خود شوید! اطلاعات حساب کاربری خود را وارد
+                            کنید
+                        </p>
+                    </div>
+                </div>
+                <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ReturnUrl "/>
+                    <div class="card-content">
+                        <div class="form-group position-relative">
+                            <div class="position-absolute input-icon d-flex align-items-center">
+                                <i class="zmdi zmdi-account"></i>
+                            </div>
+                            <input asp-for="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="موبایل" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group position-relative">
+                            <div class="position-absolute input-icon d-flex align-items-center">
+                                <i class="zmdi zmdi-lock"></i>
+                            </div>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="کلمه عبور" />
+                        </div>
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <button type="submit" class="custom-btn-primary w-100">
+                            ورود
+                        </button>
+                        <p class="t-16 text-center mb-0">
+                            حساب نداری؟ <a asp-controller="Account" asp-action="Register">ایجاد حساب</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
