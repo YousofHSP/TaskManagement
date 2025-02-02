@@ -5,7 +5,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTO;
 
-public abstract class BaseDto<TDto, TEntity, TKey>  : IHaveCustomMapping
+public interface IBaseDto
+{
+    
+}
+public abstract class BaseDto<TDto, TEntity, TKey>  : IBaseDto,IHaveCustomMapping
     where TDto : class
     where TEntity :class, IEntity<TKey>
 {

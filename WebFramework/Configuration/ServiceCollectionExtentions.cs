@@ -14,7 +14,7 @@ namespace WebFramework.Configuration
             {
                 options.UseSqlServer(configuration.GetConnectionString("SqlServer"));
                 options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            });
+            }, ServiceLifetime.Scoped);
         }
 
     }

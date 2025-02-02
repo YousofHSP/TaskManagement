@@ -1,0 +1,36 @@
+@model CreateViewModel
+@{
+    
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (Model.Error)
+        {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary()
+        </div>
+        }
+        <form asp-action="Store" method="post">
+            @foreach (var field in Model.Fields)
+            {
+                @if (field.Type == FieldType.Text)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control" name="@field.Name"/>
+                    </div>
+                }
+                else if (field.Type == FieldType.Select)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <select class="form-control select2" name="@field.Name" asp-items="@field.Items">
+                        </select>
+                    </div>
+                }
+            }
+            <button type="submit" class="btn btn-primary">ثبت</button>
+        </form>
+    </div>
+</div>

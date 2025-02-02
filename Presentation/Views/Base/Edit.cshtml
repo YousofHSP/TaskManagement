@@ -1,0 +1,52 @@
+@model DTO.IBaseDto
+
+@{
+    var model = ViewBag.Model;
+}
+<div class="card">
+    <div class="card-body">
+        @if (model.Error)
+        {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary()
+        </div>
+        }
+        <form asp-action="Update" method="post">
+            @{
+                var modelId = Model.GetType().GetProperty("Id")?.GetValue(Model)?.ToString() ?? "";
+            }
+            <input type="hidden" name="Id" value="@modelId">
+            @foreach (var field in model.Fields)
+            {
+                if (field.Value == "")
+                {
+                    field.Value = Model.GetType().GetProperty(field.Name)?.GetValue(Model)?.ToString() ?? "";
+                }
+
+                @if (field.Type == FieldType.Text)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control" name="@field.Name" value="@field.Value"/>
+                    </div>
+                }
+                else if (field.Type == FieldType.Select)
+                {
+                    var items = field.Items as IEnumerable<SelectListItem>;
+                    items = items!.Select(i =>
+                    {
+                        if (field.Value == i.Value)
+                            i.Selected = true;
+                        return i;
+                    });
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <select class="form-control select2" name="@field.Name" asp-items="@items">
+                        </select>
+                    </div>
+                }
+            }
+            <button type="submit" class="btn btn-primary">ثبت</button>
+        </form>
+    </div>
+</div>
