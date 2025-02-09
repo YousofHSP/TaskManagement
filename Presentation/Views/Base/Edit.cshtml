@@ -51,6 +51,14 @@
                         <input class="form-control" type="time" name="@field.Name" value="@field.Value"/>
                     </div>
                 }
+                else if (field.Type == FieldType.DateTime)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control date-picker" type="text" name="@field.Name" value="@field.Value"/>
+                    </div>
+
+                }
             }
             <button type="submit" class="btn btn-primary">ثبت</button>
         </form>
