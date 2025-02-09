@@ -18,15 +18,15 @@ public static class ApplicationBuilderException
         }
     }
 
-    public static void DataSeeder(this IApplicationBuilder app, IWebHostEnvironment env)
+    public static async Task DataSeeder(this IApplicationBuilder app, IWebHostEnvironment env)
     {
         using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>()!; // service locator
         // dbContext.Database.EnsureCreated();
-        dbContext.Database.Migrate();
+        await dbContext.Database.MigrateAsync();
 
         var dataInitializers = scope.ServiceProvider.GetServices<IDataInitializer>();
         foreach (var dataInitializer in dataInitializers)
-            dataInitializer.InitializerData();
+            await dataInitializer.InitializerData();
     }
 }

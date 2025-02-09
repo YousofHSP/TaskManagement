@@ -4,5 +4,5 @@ namespace Services.DataInitializer;
 
 public interface IDataInitializer: IScopedDependency
 {
-    public void InitializerData();
+    public Task InitializerData();
 }

@@ -4,13 +4,14 @@ using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Data.Reprositories;
 using Entity;
+using Microsoft.AspNetCore.Http;
 
 namespace Data.Repositories
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
-        public UserRepository(ApplicationDbContext dbContext)
-            : base(dbContext)
+        public UserRepository(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, httpContextAccessor)
         {
         }
 

@@ -44,6 +44,12 @@
                         <select class="form-control select2" name="@field.Name" asp-items="@items">
                         </select>
                     </div>
+                }else if (field.Type == FieldType.Time)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control" type="time" name="@field.Name" value="@field.Value"/>
+                    </div>
                 }
             }
             <button type="submit" class="btn btn-primary">ثبت</button>

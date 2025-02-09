@@ -16,6 +16,7 @@ public class User : IdentityUser<int>, IEntity<int>
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
     public IEnumerable<Ticket>? Tickets { get; set; }
+    public List<Job>? OwnedJobs { get; set; }
 
 }
 
@@ -25,6 +26,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(user => user.UserName).IsRequired().HasMaxLength(100);
         builder.HasMany(user => user.Tickets)
+            .WithOne(t => t.User)
+            .HasForeignKey(t => t.UserId);
+        builder.HasMany(user => user.OwnedJobs)
             .WithOne(t => t.User)
             .HasForeignKey(t => t.UserId);
 

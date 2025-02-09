@@ -18,7 +18,7 @@
                 {
                     <div class="form-group">
                         <label for="@field.Name">@field.Label</label>
-                        <input class="form-control" name="@field.Name"/>
+                        <input class="form-control" type="text" name="@field.Name"/>
                     </div>
                 }
                 else if (field.Type == FieldType.Select)
@@ -28,6 +28,20 @@
                         <select class="form-control select2" name="@field.Name" asp-items="@field.Items">
                         </select>
                     </div>
+                }else if (field.Type == FieldType.Time)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control" type="time" name="@field.Name"/>
+                    </div>
+                    
+                }else if (field.Type == FieldType.DateTime)
+                {
+                    <div class="form-group">
+                        <label for="@field.Name">@field.Label</label>
+                        <input class="form-control date-picker" type="text" name="@field.Name"/>
+                    </div>
+
                 }
             }
             <button type="submit" class="btn btn-primary">ثبت</button>

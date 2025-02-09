@@ -7,6 +7,7 @@ using Entity.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Presentation.Attributes;
 using Presentation.DTO;
 using Presentation.Models;
 
@@ -21,7 +22,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     private readonly IndexViewModel<TResDto> _indexViewModel = new();
     private readonly CreateViewModel _createViewModel = new();
     private readonly EditViewModel _editViewModel = new();
-    private List<string> Includes;
+    private List<string> Includes = [];
     protected TEntity? Model { get; private set; }
 
     protected void SetIncludes(params List<string> includes)
@@ -57,6 +58,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     }
 
     [HttpGet]
+    [HasPermission]
     public virtual async Task<ViewResult> Index(CancellationToken ct)
     {
         await Configure("index", ct);
@@ -77,6 +79,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     }
 
     [HttpGet]
+    [HasPermission]
     public virtual async Task<ViewResult> Create(CancellationToken ct)
     {
         await Configure("create", ct);
@@ -84,6 +87,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     }
 
     [HttpGet]
+    [HasPermission]
     public virtual async Task<IActionResult> Edit(TKey id, CancellationToken ct)
     {
         var model = await repository
@@ -145,6 +149,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     }
 
     [HttpGet]
+    [HasPermission]
     public virtual async Task<IActionResult> Delete(TKey id, CancellationToken ct)
     {
         var model = await repository.GetByIdAsync(ct,id);

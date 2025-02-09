@@ -9,6 +9,8 @@ public enum FieldType
     MultiSelect,
     Number,
     Checkbox,
+    Time,
+    DateTime,
     Radio
 }
 public class Field

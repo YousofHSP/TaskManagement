@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using Presentation.Attributes;
 
 namespace Presentation.Controllers;
 
-[Authorize(Roles ="Admin,Consultant")]
 public class UserController : Controller
 {
     private readonly IUserRepository _userRepository;
@@ -29,6 +29,7 @@ public class UserController : Controller
     }
 
     [HttpGet]
+    [HasPermission("User.Index")]
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var users = await _userRepository

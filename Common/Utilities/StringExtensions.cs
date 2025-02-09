@@ -84,9 +84,30 @@ namespace Common.Utilities
             int hour = dateTime.Hour;
             int minute = dateTime.Minute;
 
-            return $"{year}/{month.ToString("00")}/{day.ToString("00")} {hour.ToString("00")}:{minute.ToString("00")}";
+            return $"{hour.ToString("00")}:{minute.ToString("00")} {year}/{month.ToString("00")}/{day.ToString("00")}";
 
 
+        }
+        public static DateTime ToShamsi(this string shamsiString)
+        {
+            
+                if (shamsiString == "")
+                    return new DateTime();
+                shamsiString = shamsiString.Fa2En();
+                var parts = shamsiString.Split(' ');
+                var timeParts = parts[0].Split(':');
+                var dateParts = parts[1].Split('-');
+                
+                // Convert to integer
+                var year = int.Parse(dateParts[0]);
+                var month = int.Parse(dateParts[1]);
+                var day = int.Parse(dateParts[2]);
+                var hour = int.Parse(timeParts[0]);
+                var minute = int.Parse(timeParts[1]);
+                
+                // Use PersianCalendar to convert
+                var persianCalendar = new PersianCalendar();
+                return persianCalendar.ToDateTime(year, month, day, hour, minute, 0, 0);
         }
     }
 }

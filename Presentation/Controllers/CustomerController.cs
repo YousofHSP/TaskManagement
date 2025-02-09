@@ -9,7 +9,7 @@ using Presentation.Models;
 
 namespace Presentation.Controllers;
 
-public class CustomerController(IRepository<Customer> repository, IMapper mapper) : BaseController<CustomerDto,CustomerResDto, Customer>(repository, mapper)
+public class CustomerController(IRepository<Customer> repository, IRepository<Plan> planRepository, IMapper mapper) : BaseController<CustomerDto,CustomerResDto, Customer>(repository, mapper)
 {
     public override async Task Configure(string method, CancellationToken ct)
     {
@@ -17,21 +17,24 @@ public class CustomerController(IRepository<Customer> repository, IMapper mapper
         SetTitle("مشتریان");
         SetIncludes("Parent");
         AddColumn("عنوان", "Title");
+        AddColumn("پلن", "PlanTitle");
         AddColumn("والد", "ParentTitle");
 
 
 
         if (method is "create" or "edit")
         {
-            var items = repository.TableNoTracking
+            AddField("Title", "عنوان");
+            var customerItems = repository.TableNoTracking
                 .AsQueryable();
             
             if (Model is not null)
-                items = items.Where(i => i.Id != Model.Id);
-            var res = await items
+                customerItems = customerItems.Where(i => i.Id != Model.Id);
+            var res = await customerItems
                 .ToListAsync(ct);
-            AddField("Title", "عنوان");
             AddField("ParentId", "والد", FieldType.Select, Model?.ParentId?.ToString() ?? "",res.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList());
+            var plansItem = await planRepository.TableNoTracking.ToListAsync(ct);
+            AddField("PlanId", "پلن", FieldType.Select, Model?.PlanId.ToString() ?? "",plansItem.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList());
         }
     }
 }

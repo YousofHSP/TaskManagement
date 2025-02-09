@@ -15,7 +15,7 @@ public interface IEntity<TKey> : IEntity
 
 public abstract class BaseEntity<TKey> : IEntity<TKey>
 {
-    public required TKey Id { get; set; }
+    public TKey Id { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 }
 

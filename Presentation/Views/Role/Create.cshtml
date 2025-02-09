@@ -1,4 +1,5 @@
-﻿@model DTO.RoleDto
+﻿@using Entity
+@model DTO.RoleDto
 
 @{
     ViewData["Title"] = "Create";
@@ -9,7 +10,7 @@
 <h4>RoleDto</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         @if(ViewBag.Errors is not null)
         {
             <div class="alert alert-danger">
@@ -19,7 +20,7 @@
                 }
             </div>
         }
-        <form asp-action="Create">
+        <form asp-action="Store" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -30,6 +31,17 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    @foreach (var permission in Permissions.AllPermissions)
+                    {
+                        <div class="col-md-3">
+                            <label>@permission.Value</label>
+                            <input name="Permissions" value="@permission.Key" type="checkbox"/>
+                        </div>
+                    }
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

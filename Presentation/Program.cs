@@ -17,17 +17,19 @@ builder.Services.Configure<SiteSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddControllersWithViews(options => { options.Filters.Add(new AuthorizeFilter());});
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddCustomIdentity(siteSettings.IdentitySettings);
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IDataInitializer, RoleDataInitializer>();
 builder.Services.AddScoped<IDataInitializer, UserDataInitializer>();
 
 builder.Services.InitializeAutoMapper();
 
 var app = builder.Build();
 
-app.DataSeeder(app.Environment);
+await app.DataSeeder(app.Environment);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

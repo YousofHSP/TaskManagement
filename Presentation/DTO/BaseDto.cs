@@ -46,9 +46,13 @@ public abstract class BaseDto<TDto, TEntity, TKey>  : IBaseDto,IHaveCustomMappin
                 mappingExpression.ForMember(property.Name, opt => opt.Ignore());
         }
 
+        CustomMappings(mappingExpression);
         CustomMappings(mappingExpression.ReverseMap());
     }
 
+    protected virtual void CustomMappings(IMappingExpression<TDto, TEntity> mapping)
+    {
+    }
     protected virtual void CustomMappings(IMappingExpression<TEntity, TDto> mapping)
     {
     }

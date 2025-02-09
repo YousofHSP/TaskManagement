@@ -2,11 +2,10 @@
 using Data.Contracts;
 using Entity.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
+using Entity;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Data.Reprositories
 {
@@ -17,10 +16,12 @@ namespace Data.Reprositories
         public DbSet<TEntity> Entities { get; }
         public virtual IQueryable<TEntity> Table => Entities;
         public virtual IQueryable<TEntity> TableNoTracking => Entities.AsNoTracking();
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public Repository(ApplicationDbContext dbContext)
+        public Repository(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             this.dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
             Entities = dbContext.Set<TEntity>(); // City => Cities
         }
 
@@ -34,7 +35,17 @@ namespace Data.Reprositories
         public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)
         {
             Assert.NotNull(entity, nameof(entity));
+            var entityString = JsonConvert.SerializeObject(entity);
+            var audit = new Audit
+            {
+                CreatedAt = DateTimeOffset.Now,
+                Model = entity.GetType().Name,
+                Method = "Add",
+                OldValue = "",
+                NewValue = entityString
+            };
             await Entities.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+            await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);
             if (saveNow)
                 await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -51,7 +62,20 @@ namespace Data.Reprositories
         public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)
         {
             Assert.NotNull(entity, nameof(entity));
+            var entityString = JsonConvert.SerializeObject(entity);
+            var entry = dbContext.Entry(entity);
+            var oldEntity = entry.OriginalValues.Clone();
+            var oldEntityString = JsonConvert.SerializeObject(oldEntity.Properties.ToDictionary(i => i.Name, i => oldEntity[i]));
+            var audit = new Audit
+            {
+                CreatedAt = DateTimeOffset.Now,
+                Model = entity.GetType().Name,
+                Method = "Update",
+                OldValue = oldEntityString, 
+                NewValue = entityString
+            };
             Entities.Update(entity);
+            await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);
             if (saveNow)
                 await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -68,7 +92,16 @@ namespace Data.Reprositories
         public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)
         {
             Assert.NotNull(entity, nameof(entity));
+            var audit = new Audit
+            {
+                CreatedAt = DateTimeOffset.Now,
+                Model = entity.GetType().Name,
+                Method = "Delete",
+                OldValue = "", 
+                NewValue = ""
+            };
             Entities.Remove(entity);
+            await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);
             if (saveNow)
                 await dbContext.SaveChangesAsync(cancellationToken);
         }
