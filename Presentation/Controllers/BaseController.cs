@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Linq.Dynamic.Core;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Data.Contracts;
@@ -23,6 +25,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     private readonly CreateViewModel _createViewModel = new();
     private readonly EditViewModel _editViewModel = new();
     private List<string> Includes = [];
+    private List<SumType<TEntity>> Sums = new();
     protected TEntity? Model { get; private set; }
 
     protected void SetIncludes(params List<string> includes)
@@ -40,6 +43,16 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         Columns.Add(new Column { Name = name, Value = value });
     }
 
+    protected void AddSum(string title, Func<TEntity, double> sumFunc, SumTypeEnum type)
+    {
+        Sums.Add(new SumType<TEntity>
+        {
+            Title = title,
+            Type = type,
+            Func = sumFunc
+        });
+    }
+
     protected void AddField(string name, string label, FieldType type = FieldType.Text, string value = "",
         List<SelectListItem>? items = null)
     {
@@ -50,6 +63,15 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
             { Label = label, Name = name, Type = type, Value = value, Items = items });
     }
 
+    protected void AddFilter(string name, string label, FieldType type = FieldType.Text, string value = "",
+        List<SelectListItem>? items = null)
+    {
+        items ??= [];
+        if (type is FieldType.Select or FieldType.MultiSelect)
+            items.Insert(0, new SelectListItem("انتخاب کنید", ""));
+        _indexViewModel.Filters.Add(new Field
+            { Label = label, Name = name, Type = type, Value = value, Items = items });
+    }
     public virtual async Task Configure(string method, CancellationToken ct)
     {
         _indexViewModel.ViewSetting.Create = true;
@@ -59,7 +81,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
     [HttpGet]
     [HasPermission]
-    public virtual async Task<ViewResult> Index(CancellationToken ct)
+    public virtual async Task<ViewResult> Index(IndexDto model, CancellationToken ct)
     {
         await Configure("index", ct);
         var list = repository.TableNoTracking
@@ -71,9 +93,34 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
                 list = list.Include(item).AsQueryable();
         }
 
-        var res = await list.ProjectTo<TResDto>(mapper.ConfigurationProvider).ToListAsync(ct);
+        if (model.Filters != null && model.Filters.Count != 0)
+            foreach (var filter in model.Filters)
+                if(!string.IsNullOrEmpty(filter.Value))
+                    list = list.Where($"{filter.Key} == @0", filter.Value);
+
+        var queryRes = await list.ToListAsync(ct);
+        var res = mapper.Map<List<TResDto>>(queryRes);
         _indexViewModel.Rows = res;
         _indexViewModel.Columns = Columns;
+        ViewBag.SelectedFilters = model.Filters;
+        var sumItems = new Dictionary<string, string>();
+        foreach (var sum in Sums)
+        {
+            var sumRow = queryRes.Sum(sum.Func);
+            if (sum.Type == SumTypeEnum.Time)
+            {
+                var timeSpan = TimeSpan.FromMinutes(sumRow);
+                sumItems.Add(sum.Title, $"{(int)timeSpan.TotalHours:D2}:{timeSpan.Minutes:D2}");
+                
+            }
+            else
+            {
+                sumItems.Add(sum.Title, sumRow.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
+        ViewBag.Sums = sumItems;
+            
         ViewBag.Model = _indexViewModel;
         return View("~/Views/Base/Index.cshtml", _indexViewModel);
     }

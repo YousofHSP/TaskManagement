@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Entity.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,6 +16,7 @@ public class Job:BaseEntity
     public int EventId { get; set; }
     public DateTime? StartDateTime { get; set; }
     public DateTime? EndDateTime { get; set; }
+    public JobStatus Status { get; set; }
 
     public Job? Parent { get; set; }
     public List<Job>? Children { get; set; } = [];
@@ -22,6 +24,16 @@ public class Job:BaseEntity
     public Customer Customer { get; set; } = null!;
     public Event Event { get; set; } = null!;
     public Plan Plan { get; set; }
+}
+
+public enum JobStatus
+{
+    [Display(Name = "در انتظار")]
+    Todo,
+    [Display(Name = "در حال پردازش")]
+    InProgress,
+    [Display(Name = "انجام شده")]
+    Done,
 }
 
 public class JobConfiguration : IEntityTypeConfiguration<Job>

@@ -21,6 +21,7 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
+        SetIncludes("Customer", "User", "Parent", "Event", "Plan");
         AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.Title), nameof(JobResDto.Title));
         AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.UserFullName), nameof(JobResDto.UserFullName));
         AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.CustomerTitle), nameof(JobResDto.CustomerTitle));
@@ -35,6 +36,12 @@ public class JobController(
         var customers = await customerRepository.TableNoTracking.ToListAsync(ct);
         var events = await eventRepository.TableNoTracking.ToListAsync(ct);
         var plans = await planRepository.TableNoTracking.ToListAsync(ct);
+        var jobStatus = new List<SelectListItem>
+        {
+            new SelectListItem(JobStatus.Todo.ToDisplay(), JobStatus.Todo.ToString()),
+            new SelectListItem(JobStatus.InProgress.ToDisplay(), JobStatus.InProgress.ToString()),
+            new SelectListItem(JobStatus.Done.ToDisplay(), JobStatus.Done.ToString()),
+        };
         var parentsQuery = repository.TableNoTracking.AsQueryable();
         if(Model is not null)
             parentsQuery = parentsQuery.Where(i => i.Id != Model.Id);
@@ -73,6 +80,37 @@ public class JobController(
             );
         AddField(nameof(JobDto.StartedAt),ModelExtensions.ToDisplay<JobDto>(i => i.StartedAt), FieldType.DateTime);
         AddField(nameof(JobDto.EndedAt),ModelExtensions.ToDisplay<JobDto>(i => i.EndedAt), FieldType.DateTime);
+        AddField(nameof(JobDto.Status),
+            ModelExtensions.ToDisplay<JobDto>(i => i.Status),
+            FieldType.Select,
+            Model?.Status.ToString() ?? "",
+            jobStatus
+            );
         AddField(nameof(JobDto.Description),ModelExtensions.ToDisplay<JobDto>(i => i.Description));
+        
+        AddFilter(nameof(JobDto.UserId),
+            ModelExtensions.ToDisplay<JobDto>(i => i.UserId),
+            FieldType.Select,
+            "",
+            users.Select(i => new SelectListItem(i.FullName, i.Id.ToString())).ToList()
+            );
+        AddFilter(nameof(JobDto.CustomerId),
+            ModelExtensions.ToDisplay<JobDto>(i => i.CustomerId),
+            FieldType.Select,
+            "",
+            customers.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
+            );
+        AddFilter(nameof(JobDto.PlanId),
+            ModelExtensions.ToDisplay<JobDto>(i => i.PlanId),
+            FieldType.Select,
+            "",
+            plans.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
+            );
+        AddSum("جمع ساعات", i =>
+        {
+            if (i is { EndDateTime: not null, StartDateTime: not null }) return (i.EndDateTime.Value - i.StartDateTime.Value).TotalMinutes;
+            return 0;
+        }, SumTypeEnum.Time);
+
     }
 }

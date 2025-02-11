@@ -42,6 +42,8 @@ public class JobDto:BaseDto<JobDto, Job>
     [Display(Name = "تاریخ پایان")]
     public string EndedAt { get; set; }
 
+    [Display(Name = "وضعیت")]
+    public JobStatus Status { get; set; }
     protected override void CustomMappings(IMappingExpression<Job, JobDto> mapping)
     {
         mapping.ForMember(

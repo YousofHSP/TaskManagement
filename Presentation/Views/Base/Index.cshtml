@@ -1,11 +1,40 @@
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 
 @{
     var model = ViewBag.Model;
+    var selectedFilters = ViewBag.SelectedFilters as Dictionary<string, string>;
+    var sums = ViewBag.Sums as Dictionary<string, string> ?? new();
     ViewData["Title"] = "لیست " + Model.Title;
 }
 
 <div class="card">
     <div class="card-body">
+        <div class="col-12 mb-3">
+            <form asp-action="Index" method="get">
+                <div class="row">
+                    @foreach (var filter in (model.Filters as List<Field>)!)
+                    {
+                        var selectedValue = selectedFilters?.GetValueOrDefault(filter.Name);
+                        if (!string.IsNullOrEmpty(selectedValue))
+                        {
+                            filter.Items = filter.Items.Select(i =>
+                            {
+                                if (i.Value == selectedValue)
+                                    i.Selected = true;
+                                return i;
+                            }).ToList();
+                        }
+                        <div class="form-group col-md-6">
+                            <label for="@filter.Name">@filter.Label</label>
+                            <select class="form-control select2" name="Filters[@filter.Name]" asp-items="@filter.Items">
+                            </select>
+
+                        </div>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary">جستجو</button>
+            </form>
+        </div>
         @if (model.ViewSetting.Create)
         {
             <a asp-action="Create" class="btn btn-primary">ایجاد</a>
@@ -22,6 +51,8 @@
                     <td></td>
                 }
             </tr>
+            </thead>
+            <tbody>
             @foreach (var row in model.Rows)
             {
                 <tr>
@@ -31,22 +62,31 @@
                     }
                     @if (model.ViewSetting.Edit || model.ViewSetting.Delete)
                     {
-                    <td>
-                        @if (model.ViewSetting.Edit)
-                        {
-                            <a asp-action="Edit" asp-route-id="@row.Id" class="btn btn-primary">ویرایش</a>
-                        }
-                        @if (model.ViewSetting.Delete)
-                        {
-                            <a asp-action="Delete" asp-route-id="@row.Id" class="btn btn-danger">حذف</a>
-                        }
-                    </td>
+                        <td>
+                            @if (model.ViewSetting.Edit)
+                            {
+                                <a asp-action="Edit" asp-route-id="@row.Id" class="btn btn-primary">ویرایش</a>
+                            }
+                            @if (model.ViewSetting.Delete)
+                            {
+                                <a asp-action="Delete" asp-route-id="@row.Id" class="btn btn-danger">حذف</a>
+                            }
+                        </td>
                     }
                 </tr>
             }
-            
-            </thead>
+            </tbody>
         </table>
+        <div class="row">
+            @foreach(var sumItem in sums)
+            {
+                <div class="col-3 d-flex">
+                    <div class="col">@sumItem.Key</div>
+                    <div class="col">@sumItem.Value</div>
+                </div>
+            }
+        </div>
+        
     </div>
     
 </div>
