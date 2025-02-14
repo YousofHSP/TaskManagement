@@ -88,7 +88,7 @@ namespace Common.Utilities
 
 
         }
-        public static DateTime ToShamsi(this string shamsiString)
+        public static DateTime ToGregorian (this string shamsiString)
         {
             
                 if (shamsiString == "")
@@ -96,7 +96,7 @@ namespace Common.Utilities
                 shamsiString = shamsiString.Fa2En();
                 var parts = shamsiString.Split(' ');
                 var timeParts = parts[0].Split(':');
-                var dateParts = parts[1].Split('-');
+                var dateParts = parts[1].Split('/');
                 
                 // Convert to integer
                 var year = int.Parse(dateParts[0]);

@@ -7,4 +7,5 @@ public class Role: IdentityRole<int>, IEntity<int>
 {
     public string? Description { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
+    public List<User> Users { get; set; }
 }

@@ -110,7 +110,7 @@
         initEnlarge();
         initSerach();
         initMainIconMenu();
-        initTooltipPlugin();
+        // initTooltipPlugin();
         initActiveMenu();
         Waves.init();
     }

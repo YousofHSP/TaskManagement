@@ -2,22 +2,29 @@ namespace Entity;
 
 public static class Permissions
 {
-    public static Dictionary<string, string> AllPermissions = new()
-    {
-        { "User.Index", "نمایش کابران" },
-        { "User.Create", "ایجاد کابران" },
-        { "User.Edit", "ویرایش کابران" },
-        { "User.Delete", "حذف کابران" },
+    public static List<Permission> All =
+    [
+        new() { Controller = "User", Action = "Index", ControllerLabel = "کاربر", ActionLabel = "نمایش" },
+        new() { Controller = "User", Action = "Create", ControllerLabel = "کاربر", ActionLabel = "ایجاد" },
+        new() { Controller = "User", Action = "Edit", ControllerLabel = "کاربر", ActionLabel = "ویرایش" },
+        new() { Controller = "User", Action = "Delete", ControllerLabel = "کاربر", ActionLabel = "حذف" },
         
-        { "Customer.Index", "نمایش مشتریان" },
-        { "Customer.Create", "ایجاد مشتریان" },
-        { "Customer.Edit", "ویرایش مشتریان" },
-        { "Customer.Delete", "حذف مشتریان" },
+        new() { Controller = "Customer", ControllerLabel = "مشتری",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Delete", ActionLabel = "حذف" },
         
-        { "Role.Index", "نمایش نقش" },
-        { "Role.Create", "ایجاد نقش" },
-        { "Role.Edit", "ویرایش نقش" },
-        { "Role.Delete", "حذف نقش" },
-    };
+        new() { Controller = "Role", ControllerLabel = "نقش",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Role", ControllerLabel = "نقش", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Role", ControllerLabel = "نقش", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Role", ControllerLabel = "نقش", Action = "Delete", ActionLabel = "حذف" },
+    ];
+}
 
+public class Permission
+{
+    public required string Controller { get; set; }
+    public required string ControllerLabel { get; set; }
+    public required string Action { get; set; }
+    public required string ActionLabel { get; set; }
 }

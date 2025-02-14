@@ -11,39 +11,48 @@
             @Html.ValidationSummary()
         </div>
         }
-        <form asp-action="Store" method="post">
-            @foreach (var field in Model.Fields)
-            {
-                @if (field.Type == FieldType.Text)
+        <form asp-action="Create" method="post">
+            <div class="row">
+                @foreach (var field in Model.Fields)
                 {
-                    <div class="form-group">
-                        <label for="@field.Name">@field.Label</label>
-                        <input class="form-control" type="text" name="@field.Name"/>
+                <div class="col-md-6">
+                        <div class="@(field.Type == FieldType.Checkbox ? "form-check" : "form-group")">
+                            <label class="@(field.Type == FieldType.Checkbox ? "from-check-label" : "form-label")" for="@field.Name">@field.Label</label>
+                            @switch (field.Type)
+                            {
+                                case FieldType.Text:
+                                    <input class="form-control" type="text" name="@field.Name"/>
+                                    break;
+                                case FieldType.Select:
+                                    <select class="form-control select2" name="@field.Name" asp-items="@field.Items">
+                                    </select>
+                                    break;
+                                case FieldType.Time:
+                                    <input class="form-control" type="time" name="@field.Name"/>
+                                    break;
+                                case FieldType.DateTime:
+                                    <input class="form-control date-picker" type="text" name="@field.Name"/>
+                                    break;
+                                case FieldType.MultiSelect:
+                                    <select class="form-control select2" multiple name="@(field.Name)[]" asp-items="@field.Items"> </select>
+                                    break;
+                                case FieldType.Number:
+                                    <input class="form-control" type="number" name="@field.Name"/>
+                                    break;
+                                case FieldType.Checkbox:
+                                    <input class="form-check-input" type="checkbox" name="@field.Name"/>
+                                    break;
+                                case FieldType.Radio:
+                                    <input class="form-control" type="radio" name="@field.Name"/>
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        </div>
                     </div>
                 }
-                else if (field.Type == FieldType.Select)
-                {
-                    <div class="form-group">
-                        <label for="@field.Name">@field.Label</label>
-                        <select class="form-control select2" name="@field.Name" asp-items="@field.Items">
-                        </select>
-                    </div>
-                }else if (field.Type == FieldType.Time)
-                {
-                    <div class="form-group">
-                        <label for="@field.Name">@field.Label</label>
-                        <input class="form-control" type="time" name="@field.Name"/>
-                    </div>
-                    
-                }else if (field.Type == FieldType.DateTime)
-                {
-                    <div class="form-group">
-                        <label for="@field.Name">@field.Label</label>
-                        <input class="form-control date-picker" type="text" name="@field.Name"/>
-                    </div>
-
-                }
-            }
+                
+            </div>
             <button type="submit" class="btn btn-primary">ثبت</button>
         </form>
     </div>

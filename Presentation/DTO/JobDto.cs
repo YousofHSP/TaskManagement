@@ -48,12 +48,12 @@ public class JobDto:BaseDto<JobDto, Job>
     {
         mapping.ForMember(
             d => d.StartedAt,
-            s => s.MapFrom(m => m.StartDateTime != null ? m.StartDateTime.Value.ToShamsi() : ""
+            s => s.MapFrom(m => m.StartDateTime != null ? m.StartDateTime.ToString() : ""
             )
         );
         mapping.ForMember(
             d => d.EndedAt,
-            s => s.MapFrom(m => m.EndDateTime != null ? m.EndDateTime.Value.ToShamsi() : ""
+            s => s.MapFrom(m => m.EndDateTime != null ? m.EndDateTime.Value.ToString() : ""
             )
         );
     }
@@ -62,11 +62,11 @@ public class JobDto:BaseDto<JobDto, Job>
     {
         mapping.ForMember(
             m => m.StartDateTime,
-            s => s.MapFrom(d => d.StartedAt.ToShamsi())
+            s => s.MapFrom(d => d.StartedAt.ToGregorian())
             );
         mapping.ForMember(
             m => m.EndDateTime,
-            s => s.MapFrom(d => d.EndedAt.ToShamsi())
+            s => s.MapFrom(d => d.EndedAt.ToGregorian())
             );
     }
 }

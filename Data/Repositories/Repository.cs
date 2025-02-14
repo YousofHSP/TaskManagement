@@ -36,13 +36,15 @@ namespace Data.Reprositories
         {
             Assert.NotNull(entity, nameof(entity));
             var entityString = JsonConvert.SerializeObject(entity);
+            var userId = _httpContextAccessor.HttpContext?.User.Identity?.GetUserId<int>() ?? 0;
             var audit = new Audit
             {
                 CreatedAt = DateTimeOffset.Now,
                 Model = entity.GetType().Name,
                 Method = "Add",
                 OldValue = "",
-                NewValue = entityString
+                NewValue = entityString,
+                UserId = userId
             };
             await Entities.AddAsync(entity, cancellationToken).ConfigureAwait(false);
             await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);
@@ -66,13 +68,15 @@ namespace Data.Reprositories
             var entry = dbContext.Entry(entity);
             var oldEntity = entry.OriginalValues.Clone();
             var oldEntityString = JsonConvert.SerializeObject(oldEntity.Properties.ToDictionary(i => i.Name, i => oldEntity[i]));
+            var userId = _httpContextAccessor.HttpContext?.User.Identity?.GetUserId<int>() ?? 0;
             var audit = new Audit
             {
                 CreatedAt = DateTimeOffset.Now,
                 Model = entity.GetType().Name,
                 Method = "Update",
                 OldValue = oldEntityString, 
-                NewValue = entityString
+                NewValue = entityString,
+                UserId = userId
             };
             Entities.Update(entity);
             await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);
@@ -92,13 +96,15 @@ namespace Data.Reprositories
         public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)
         {
             Assert.NotNull(entity, nameof(entity));
+            var userId = _httpContextAccessor.HttpContext?.User.Identity?.GetUserId<int>() ?? 0;
             var audit = new Audit
             {
                 CreatedAt = DateTimeOffset.Now,
                 Model = entity.GetType().Name,
                 Method = "Delete",
                 OldValue = "", 
-                NewValue = ""
+                NewValue = "",
+                UserId = userId
             };
             Entities.Remove(entity);
             await dbContext.AddAsync(audit, cancellationToken).ConfigureAwait(false);

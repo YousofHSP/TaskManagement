@@ -1,192 +1,99 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using Common.Utilities;
 using Data.Contracts;
 using DTO;
 using Entity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using Presentation.Attributes;
+using Presentation.Models;
 
 namespace Presentation.Controllers;
 
-public class UserController : Controller
+public class UserController(
+    IMapper mapper,
+    IUserRepository repository,
+    IRepository<Role> roleRepository,
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager)
+    : BaseController<UserDto, UserResDto, User>(repository, mapper)
 {
-    private readonly IUserRepository _userRepository;
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly IMapper _mapper;
-
-    public UserController(IUserRepository userRepository, IMapper mapper, UserManager<User> userManager, RoleManager<Role> roleManager)
+    private readonly IMapper _mapper = mapper;
+    public override async Task Configure(string method, CancellationToken ct)
     {
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _userManager = userManager;
-        _roleManager = roleManager;
+        await base.Configure(method, ct);
+        SetIncludes("Roles");
+        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.FullName), nameof(UserResDto.FullName));
+        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.PhoneNumber), nameof(UserResDto.PhoneNumber));
+        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.RoleName), nameof(UserResDto.RoleName));
+
+        var roles = await roleRepository.TableNoTracking.Select(i => new SelectListItem(i.Name, i.Name)).ToListAsync(ct);
+        AddField(nameof(UserDto.FullName), ModelExtensions.ToDisplay<UserDto>(i => i.FullName));
+        AddField(nameof(UserDto.PhoneNumber), ModelExtensions.ToDisplay<UserDto>(i => i.PhoneNumber));
+        AddField(nameof(UserDto.Password), ModelExtensions.ToDisplay<UserDto>(i => i.Password));
+        var selectedRole = "";
+        if (method is "edit" or "update" && Model is not null)
+            selectedRole = (await userManager.GetRolesAsync(Model)).FirstOrDefault() ?? "";
+        AddField(nameof(UserDto.RoleName), ModelExtensions.ToDisplay<UserDto>(i => i.RoleName), FieldType.Select, selectedRole,roles);
+        AddCondition(m => !m.Id.Equals(1));
+        
     }
 
-    [HttpGet]
-    [HasPermission("User.Index")]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public override async Task<IActionResult> Create(UserDto dto, CancellationToken ct)
     {
-        var users = await _userRepository
-            .TableNoTracking
-            .Where(u => u.Id != 1)
-            .OrderByDescending(u => u.Id)
-            .ProjectTo<UserListDto>(_mapper.ConfigurationProvider)
-            .ToListAsync(cancellationToken);
-        return View(users);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Edit(int id)
-    {
-        var dto = await _userRepository
-            .TableNoTracking
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.Id.Equals(id));
-        var user = await _userManager.FindByIdAsync(id.ToString());
-        var role = await _userManager.GetRolesAsync(user!);
-        dto.RoleName = role.FirstOrDefault() ?? "";
-        var roles = new List<SelectListItem>(
-            _roleManager.Roles.Select(r => new SelectListItem
-            {
-                Text = r.Description,
-                Value = r.Name,
-                Selected = dto.RoleName == r.Name,
-            }).ToList());
-        dto.Roles = roles;
-        return View(dto);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Edit(UserDto dto, CancellationToken cancellationToken)
-    {
-        if(!ModelState.IsValid) return View(dto);
-        var user = await _userRepository.GetByIdAsync(cancellationToken, dto.Id);
-        if(user is null) return View(dto);
-
-        user = dto.ToEntity(user, _mapper);
-        await _userRepository.UpdateAsync(user, cancellationToken);
-        var roles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, roles);
-        await _userManager.AddToRoleAsync(user!, dto.RoleName);
-
-        if (dto.Password is not null)
+        await Configure("store", ct);
+        if (string.IsNullOrEmpty(dto.Password))
         {
-            await _userManager.RemovePasswordAsync(user);
-            await _userManager.AddPasswordAsync(user, dto.Password);
+            
+            CreateViewModel.Error = true;
+            ModelState.AddModelError(nameof(UserDto.Password), "رمز کاربر را وارد کنید");
+            return View("~/Views/Base/Create.cshtml", CreateViewModel);
+        }
+        if (!ModelState.IsValid)
+        {
+            CreateViewModel.Error = true;
+            return View("~/Views/Base/Create.cshtml", CreateViewModel);
+        }
+        var isExists = await repository.TableNoTracking.AnyAsync(i => i.PhoneNumber == dto.PhoneNumber, ct);
+        if (isExists)
+        {
+            ModelState.AddModelError(nameof(UserDto.PhoneNumber), "این موبایل قبلا انتخاب شده");
+            CreateViewModel.Error = true;
+            return View("~/Views/Base/Create.cshtml", CreateViewModel);
+        }
+            
+        var model = dto.ToEntity(mapper);
+        model.UserName = model.PhoneNumber;
+        await userManager.CreateAsync(model);
+        await userManager.AddToRoleAsync(model, dto.RoleName);
+        await userManager.AddPasswordAsync(model, dto.Password);
+        return RedirectToAction(nameof(Index));
+
+    }
+
+    public override async  Task<IActionResult> Edit(UserDto dto, CancellationToken ct)
+    {
+        await Configure("update", ct);
+        var model = await repository.GetByIdAsync(ct, dto.Id);
+        if (model is null)
+            return NotFound();
+        model = dto.ToEntity(model, mapper);
+        EditViewModel.Fields = CreateViewModel.Fields;
+        EditViewModel.Error = false;
+        ViewBag.Model = EditViewModel;
+        if (!ModelState.IsValid)
+        {
+            EditViewModel.Error = true;
+            return View("~/Views/Base/Edit.cshtml", dto);
         }
 
-        return RedirectToAction("Index", "User");
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Details(int id)
-    {
-        var user = await _userRepository
-            .TableNoTracking
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.Id.Equals(id));
-        return View(user);
-    }
-
-    [HttpGet]
-    public IActionResult Create()
-    {
-        var dto = new UserDto();
-        var roles = new List<SelectListItem>(
-            _roleManager.Roles.Select(r => new SelectListItem
-            {
-                Text = r.Description,
-                Value = r.Name,
-                Selected = dto.RoleName == r.Name,
-            }).ToList());
-        dto.Roles = roles;
-        return View(dto);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(UserDto dto, CancellationToken cancellationToken)
-    {
-        if(!ModelState.IsValid) return View(dto);
-        var checkPhoneNumber = await _userRepository.CheckUserName(dto.PhoneNumber, cancellationToken);
-        if (checkPhoneNumber)
+        await userManager.UpdateAsync(model);
+        if (!string.IsNullOrEmpty(dto.Password))
         {
-            ModelState.AddModelError(nameof(dto.PhoneNumber), "شماره موبایل تکراری است");
-            return View(dto);
+            await userManager.RemovePasswordAsync(model);
+            await userManager.AddPasswordAsync(model, dto.Password);
         }
-        var user = new User();
-        user = dto.ToEntity(user, _mapper);
-        user.UserName = dto.PhoneNumber;
-        var result = await _userManager.CreateAsync(user, dto.Password);
-        if(!result.Succeeded)
-        {
-            var errorMessage = "";
-            foreach (var item in result.Errors)
-            {
-                errorMessage += item + Environment.NewLine;
-            }
-            ModelState.AddModelError(string.Empty, errorMessage);
-            return View(dto);
-        }
-        await _userManager.AddToRoleAsync(user!, dto.RoleName);
-        return RedirectToAction("Index", "User");
+        return RedirectToAction(nameof(Index));
     }
-
-    [HttpGet]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetByIdAsync(cancellationToken, id);
-        if (user is null) return NotFound();
-
-
-        var dto = UserDeleteDto.FromEntity(user, _mapper);
-        return View(dto);
-
-    }
-
-    public async Task<IActionResult> Delete(UserDeleteDto dto, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetByIdAsync(cancellationToken, dto.Id);
-        if (user is null) return NotFound();
-
-        var roles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, roles);
-        await _userManager.DeleteAsync(user);
-        return RedirectToAction("Index", "User");
-    }
-
-    public async Task<IActionResult> AddUserRole(int id, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetByIdAsync(cancellationToken,id);
-        if(user is null) return NotFound();
-        var roles = new List<SelectListItem>(
-            _roleManager.Roles.Select(r => new SelectListItem
-        {
-            Text = r.Name,
-            Value = r.Name,
-        }).ToList());
-        return View(new AddUserRoleDto { Roles = roles, Id = id, FullName = user.FullName, PhoneNumber = user.PhoneNumber });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddUserRole(AddUserRoleDto dto, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetByIdAsync(cancellationToken, dto.Id);
-        await _userManager.AddToRoleAsync(user!, dto.Role);
-        return RedirectToAction("UserRoles", "User", new { id = user.Id });
-    }
-
-    public async Task<IActionResult> UserRoles(int id, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetByIdAsync(cancellationToken, id);
-        var roles = await _userManager.GetRolesAsync(user!);
-        ViewBag.UserInfo = $"Name : {user.FullName} PhoneNumber: {user.PhoneNumber}";
-        return View(roles);
-    }
-
 }

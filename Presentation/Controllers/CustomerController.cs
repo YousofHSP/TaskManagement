@@ -15,7 +15,7 @@ public class CustomerController(IRepository<Customer> repository, IRepository<Pl
     {
         base.Configure(method, ct);
         SetTitle("مشتریان");
-        SetIncludes("Parent");
+        SetIncludes("Parent", "Plan");
         AddColumn("عنوان", "Title");
         AddColumn("پلن", "PlanTitle");
         AddColumn("والد", "ParentTitle");

@@ -18,6 +18,8 @@ public class RoleController(IRepository<Role> repository, RoleManager<Role> role
         AddColumn("عنوان", "Name");
         AddColumn("توضیحات", "Description");
         
+        AddCondition(i => i.Name != "Admin");
+        
     }
 
     public override async Task<ViewResult> Create(CancellationToken ct)
@@ -26,7 +28,7 @@ public class RoleController(IRepository<Role> repository, RoleManager<Role> role
         return View();
     }
 
-    public override async Task<IActionResult> Store(RoleDto dto, CancellationToken ct)
+    public override async Task<IActionResult> Create(RoleDto dto, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View("Create", dto);
         var role = dto.ToEntity(mapper);
@@ -50,7 +52,7 @@ public class RoleController(IRepository<Role> repository, RoleManager<Role> role
         return View(dto);
     }
 
-    public override async Task<IActionResult> Update(RoleDto dto, CancellationToken ct)
+    public override async Task<IActionResult> Edit(RoleDto dto, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View("Edit", dto);
         var role = repository.TableNoTracking.FirstOrDefault(i => i.Id == dto.Id);

@@ -1,3 +1,14 @@
+*{
+  font-family: "IranSans" !important;
+  direction: rtl;
+}
+.topbar .topbar-left{
+  float: right;
+}
+.navbar-custom{
+  margin-right: 270px;
+  margin-left: 0;
+}
 html {
   font-size: 14px;
 }
@@ -8,17 +19,9 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
 html {
   position: relative;
   min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +31,18 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+a{
+  text-decoration: none;
+}
+.select2-selection{
+  border: 1px solid #e8ebf3 !important;
+  font-size: 13px;
+  height: 34px;
+  color: #50649c !important;
+  padding-left: 20px;
+  padding-right: 40px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  border-radius: 40px;
 }

@@ -17,6 +17,7 @@ public class User : IdentityUser<int>, IEntity<int>
 
     public IEnumerable<Ticket>? Tickets { get; set; }
     public List<Job>? OwnedJobs { get; set; }
+    public List<Role> Roles { get; set; }
 
 }
 
@@ -31,6 +32,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(user => user.OwnedJobs)
             .WithOne(t => t.User)
             .HasForeignKey(t => t.UserId);
+        builder.HasMany(u => u.Roles)
+            .WithMany(r => r.Users)
+            .UsingEntity<IdentityUserRole<int>>();
 
     }
 }
