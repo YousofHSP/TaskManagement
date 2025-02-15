@@ -19,9 +19,11 @@ public class RegisterDto
 
 public class LoginDto
 {
+    [Display(Name = "شماره موبایل")]
     [Required(ErrorMessage = "شماره موبایل اجباری است")]
     public string PhoneNumber { get; set; }
     [Required(ErrorMessage = "رمز عبور اجباری است")]
+    [Display(Name = "رمز")]
     public string Password { get; set; }
     public string ReturnUrl { get; set; }
 }

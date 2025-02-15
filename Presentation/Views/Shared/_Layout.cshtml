@@ -1,6 +1,6 @@
 ﻿@using System.Security.Claims
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -38,65 +38,37 @@
                     <span class="ml-1 nav-user-name hidden-sm">@User.FindFirst(ClaimTypes.GivenName)?.Value <i class="mdi mdi-chevron-down"></i> </span>
                 </a>
                 <div class="dropdown-menu">
-                    <div class="dropdown-divider"></div>
+                    @* <div class="dropdown-divider"></div> *@
                     <a class="dropdown-item" style="text-align: right" asp-controller="Account" asp-action="Logout"><i class="dripicons-exit text-muted ml-2"></i> خروح</a>
                 </div>
             </li>
-            <li class="dropdown notification-list">
-                <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-bs-toggle="dropdown" href="#"
-                   role="button"
-                   aria-haspopup="false" aria-expanded="false">
-                    <i class="dripicons-bell noti-icon"></i>
-                    <span class="badge badge-danger badge-pill noti-icon-badge">2</span>
-                </a>
-                <div class="dropdown-menu dropdown-lg">
-                    <!-- item-->
-                    <h6 class="dropdown-item-text">
-                        Notifications (18)
-                    </h6>
-                    <div class="slimscroll notification-list">
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item active">
-                            <div class="notify-icon bg-success"><i class="mdi mdi-cart-outline"></i></div>
-                            <p class="notify-details">Your order is placed
-                                <small class="text-muted">Dummy text of the
-                                    printing and typesetting industry.</small></p>
-                        </a>
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
-                            <div class="notify-icon bg-warning"><i class="mdi mdi-message"></i></div>
-                            <p class="notify-details">New Message received
-                                <small class="text-muted">You have 87 unread
-                                    messages</small></p>
-                        </a>
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
-                            <div class="notify-icon bg-info"><i class="mdi mdi-glass-cocktail"></i></div>
-                            <p class="notify-details">Your item is shipped
-                                <small class="text-muted">It is a long
-                                    established fact that a reader will</small></p>
-                        </a>
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
-                            <div class="notify-icon bg-primary"><i class="mdi mdi-cart-outline"></i></div>
-                            <p class="notify-details">Your order is placed
-                                <small class="text-muted">Dummy text of the
-                                    printing and typesetting industry.</small></p>
-                        </a>
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
-                            <div class="notify-icon bg-danger"><i class="mdi mdi-message"></i></div>
-                            <p class="notify-details">New Message received
-                                <small class="text-muted">You have 87 unread
-                                    messages</small></p>
-                        </a>
-                    </div>
-                    <!-- All-->
-                    <a href="javascript:void(0);" class="dropdown-item text-center text-primary">
-                        View all <i class="fi-arrow-right"></i>
-                    </a>
-                </div>
-            </li>
+            @* <li class="dropdown notification-list"> *@
+            @*     <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-bs-toggle="dropdown" href="#" *@
+            @*        role="button" *@
+            @*        aria-haspopup="false" aria-expanded="false"> *@
+            @*         <i class="dripicons-bell noti-icon"></i> *@
+            @*         <span class="badge badge-danger badge-pill noti-icon-badge">2</span> *@
+            @*     </a> *@
+            @*     <div class="dropdown-menu dropdown-lg"> *@
+            @*         <!-- item--> *@
+            @*         <h6 class="dropdown-item-text"> *@
+            @*             Notifications (18) *@
+            @*         </h6> *@
+            @*         <div class="slimscroll notification-list"> *@
+            @*             <!-- item--> *@
+            @*             <a href="javascript:void(0);" class="dropdown-item notify-item active"> *@
+            @*                 <div class="notify-icon bg-success"><i class="mdi mdi-cart-outline"></i></div> *@
+            @*                 <p class="notify-details">Your order is placed *@
+            @*                     <small class="text-muted">Dummy text of the *@
+            @*                         printing and typesetting industry.</small></p> *@
+            @*             </a> *@
+            @*         </div> *@
+            @*         <!-- All--> *@
+            @*         <a href="javascript:void(0);" class="dropdown-item text-center text-primary"> *@
+            @*             View all <i class="fi-arrow-right"></i> *@
+            @*         </a> *@
+            @*     </div> *@
+            @* </li> *@
 
             
         </ul>

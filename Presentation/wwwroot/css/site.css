@@ -46,3 +46,16 @@ a{
           box-shadow: none;
   border-radius: 40px;
 }
+.account-body .auth-form .form-control{
+  padding-left: 0;
+  padding-right: 40px;
+}
+.account-body.accountbg{
+  background-image: url(../images/widgets/login.svg);
+  background-size: auto;
+  background-position: left;
+  background-repeat: no-repeat;
+}
+.account-body .auth-page{
+  margin: 0 10%;
+}
