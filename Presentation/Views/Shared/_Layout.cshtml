@@ -101,7 +101,9 @@
 @await RenderSectionAsync("Scripts", required: false)
 
 <script>
-    $(".select2").select2({})
+    $(".select2").select2({
+        width: "100%"
+    })
     $(document).ready(function (){
         $(".date-picker").pDatepicker({
             initValue: false,

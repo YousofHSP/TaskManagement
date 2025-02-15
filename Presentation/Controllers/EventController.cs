@@ -11,6 +11,7 @@ public class EventController(IRepository<Event> repository, IMapper mapper) : Ba
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
+        SetTitle("رویداد");
         AddColumn(ModelExtensions.ToDisplay<EventDto>(i => i.Title), nameof(EventDto.Title));
         AddColumn(ModelExtensions.ToDisplay<EventDto>(i => i.Description), nameof(EventDto.Description));
         

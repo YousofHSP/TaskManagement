@@ -10,14 +10,12 @@ using Presentation.DTO;
 
 namespace Presentation.Controllers;
 
-public class RoleController(IRepository<Role> repository, RoleManager<Role> roleManager, IMapper mapper) : BaseController<RoleDto, Role>(repository, mapper)
+public class RoleController(IRepository<Role> repository, RoleManager<Role> roleManager, IMapper mapper) : BaseController<RoleDto, RoleResDto, Role>(repository, mapper)
 {
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        AddColumn("عنوان", "Name");
-        AddColumn("توضیحات", "Description");
-        
+        SetTitle("نقش");
         AddCondition(i => i.Name != "Admin");
         
     }

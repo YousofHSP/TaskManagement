@@ -18,6 +18,22 @@ public static class Permissions
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Create",  ActionLabel = "ایجاد" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Edit",  ActionLabel = "ویرایش" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Delete", ActionLabel = "حذف" },
+        
+        new() { Controller = "Event", ControllerLabel = "رویداد",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Event", ControllerLabel = "رویداد", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Event", ControllerLabel = "رویداد", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Event", ControllerLabel = "رویداد", Action = "Delete", ActionLabel = "حذف" },
+        
+        new() { Controller = "Plan", ControllerLabel = "پلن",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Plan", ControllerLabel = "پلن", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Plan", ControllerLabel = "پلن", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Plan", ControllerLabel = "پلن", Action = "Delete", ActionLabel = "حذف" },
+        
+        new() { Controller = "Job", ControllerLabel = "تسک",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Job", ControllerLabel = "تسک", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Job", ControllerLabel = "تسک", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Job", ControllerLabel = "تسک", Action = "Delete", ActionLabel = "حذف" },
+        new() { Controller = "Job", ControllerLabel = "تسک", Action = "Report", ActionLabel = "گزارش" },
     ];
 }
 

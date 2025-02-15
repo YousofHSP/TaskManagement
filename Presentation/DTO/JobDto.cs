@@ -91,6 +91,9 @@ public class JobResDto: BaseDto<JobResDto, Job>
     public string StartDateTime { get; set; }
     [Display(Name = "تاریخ پایان")]
     public string EndDateTime { get; set; }
+    
+    [Display(Name = "وضعیت")] 
+    public JobStatus Status { get; set; }
 
     protected override void CustomMappings(IMappingExpression<Job, JobResDto> mapping)
     {
@@ -105,4 +108,14 @@ public class JobResDto: BaseDto<JobResDto, Job>
             )
         );
     }
+}
+
+public class JobReportViewModel
+{
+    [Display(Name = "مشتری")]
+    public int? CustomerId { get; set; }
+    [Display(Name = "کاربر")]
+    public int? UserId { get; set; }
+    public List<JobResDto> Jobs { get; set; }
+    public Dictionary<string, string> PlansSum { get; set; }
 }

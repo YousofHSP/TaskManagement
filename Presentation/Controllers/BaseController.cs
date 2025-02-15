@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Common.Utilities;
@@ -28,7 +30,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     protected readonly CreateViewModel CreateViewModel = new();
     protected readonly EditViewModel EditViewModel = new();
     private List<string> _includes = [];
-    private List<Func<TEntity,bool>> _conditions = [];
+    private List<Expression<Func<TEntity,bool>>> _conditions = [];
     private List<SumType<TEntity>> Sums = new();
     protected TEntity? Model { get; private set; }
 
@@ -37,7 +39,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _includes = includes;
     }
 
-    protected void AddCondition(Func<TEntity, bool> condition)
+    protected void AddCondition(Expression<Func<TEntity, bool>> condition)
     {
         _conditions.Add(condition);
     }
@@ -45,6 +47,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     protected void SetTitle(string title)
     {
         _indexViewModel.Title = title;
+        CreateViewModel.Title = title;
+        EditViewModel.Title = title;
     }
 
     protected void AddColumn(string name, string value)
@@ -86,6 +90,18 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _indexViewModel.ViewSetting.Create = true;
         _indexViewModel.ViewSetting.Edit = true;
         _indexViewModel.ViewSetting.Delete = true;
+
+        
+        var resDtoProperties = typeof(TResDto).GetProperties();
+        foreach (var property in resDtoProperties)
+        {
+            if(property.Name == "Id") continue;
+            var attr = property.GetCustomAttributes(typeof(DisplayAttribute), false).First() as DisplayAttribute;
+            if(attr?.Name is null)
+                continue;
+            AddColumn(attr.Name, property.Name);
+        }
+
     }
 
     [HttpGet]
@@ -104,10 +120,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
                 if(!string.IsNullOrEmpty(filter.Value))
                     list = list.Where($"{filter.Key} == @0", filter.Value);
 
-        var queryRes = await list.ToListAsync(ct);
         if(_conditions.Count > 0)
             foreach (var condition in _conditions)
-                queryRes = queryRes.Where(condition).ToList();
+                list = list.Where(condition).AsQueryable();
+        var queryRes = await list.ToListAsync(ct);
         var res = mapper.Map<List<TResDto>>(queryRes);
         _indexViewModel.Rows = res;
         _indexViewModel.Columns = Columns;
@@ -168,7 +184,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     [HttpPost]
     public virtual async Task<IActionResult> Create(TDto dto, CancellationToken ct)
     {
-        await Configure("store", ct);
+        await Configure("create", ct);
         var model = dto.ToEntity(mapper);
         if (!ModelState.IsValid)
         {

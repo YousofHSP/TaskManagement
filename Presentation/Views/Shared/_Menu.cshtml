@@ -1,24 +1,49 @@
-
-    <ul class="metismenu left-sidenav-menu">
-        <li>
-            <a asp-action="Index" asp-controller="Home"><i class="dripicons-meter"></i>داشبورد</a>
-        </li>
+@using Presentation.Helpers
+<ul class="metismenu left-sidenav-menu">
+    <li>
+        <a asp-action="Index" asp-controller="Home"><i class="dripicons-meter"></i>داشبورد</a>
+    </li>
+    @if (CheckPermission.Check(User, "Customer.Index"))
+    {
         <li>
             <a asp-action="Index" asp-controller="Customer"><i class="dripicons-user-group"></i>مشتری</a>
         </li>
+    }
+    @if (CheckPermission.Check(User, "User.Index"))
+    {
         <li>
-            <a  asp-action="Index" asp-controller="User"><i class="dripicons-user"></i>کاربر</a>
+            <a asp-action="Index" asp-controller="User"><i class="dripicons-user"></i>کاربر</a>
         </li>
+    }
+
+    @if (CheckPermission.Check(User, "Role.Index"))
+    {
         <li>
             <a asp-action="Index" asp-controller="Role"><i class="dripicons-lock"></i>نقش</a>
         </li>
+    }
+    @if (CheckPermission.Check(User, "Event.Index"))
+    {
         <li>
             <a asp-action="Index" asp-controller="Event"><i class="dripicons-feed"></i>رویداد</a>
         </li>
+    }
+    @if (CheckPermission.Check(User, "Plan.Index"))
+    {
         <li>
             <a asp-action="Index" asp-controller="Plan"><i class="dripicons-box"></i>پلن</a>
         </li>
+    }
+    @if (CheckPermission.Check(User, "Job.Index"))
+    {
         <li>
             <a asp-action="Index" asp-controller="Job"><i class="dripicons-tag"></i>تسک</a>
         </li>
-    </ul>
+    }
+    @if (CheckPermission.Check(User, "Job.Report"))
+    {
+        <li>
+            <a asp-action="Report" asp-controller="Job"><i class="dripicons-tags"></i>گزارش تسک</a>
+        </li>
+    }
+</ul>

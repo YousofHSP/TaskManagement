@@ -23,12 +23,10 @@ public class UserController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
+        SetTitle("کاربران");
         SetIncludes("Roles");
-        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.FullName), nameof(UserResDto.FullName));
-        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.PhoneNumber), nameof(UserResDto.PhoneNumber));
-        AddColumn(ModelExtensions.ToDisplay<UserResDto>(i => i.RoleName), nameof(UserResDto.RoleName));
 
-        var roles = await roleRepository.TableNoTracking.Select(i => new SelectListItem(i.Name, i.Name)).ToListAsync(ct);
+        var roles = await roleRepository.TableNoTracking.Where(i => i.Name != "Admin").Select(i => new SelectListItem(i.Name, i.Name)).ToListAsync(ct);
         AddField(nameof(UserDto.FullName), ModelExtensions.ToDisplay<UserDto>(i => i.FullName));
         AddField(nameof(UserDto.PhoneNumber), ModelExtensions.ToDisplay<UserDto>(i => i.PhoneNumber));
         AddField(nameof(UserDto.Password), ModelExtensions.ToDisplay<UserDto>(i => i.Password));
@@ -42,7 +40,7 @@ public class UserController(
 
     public override async Task<IActionResult> Create(UserDto dto, CancellationToken ct)
     {
-        await Configure("store", ct);
+        await Configure("create", ct);
         if (string.IsNullOrEmpty(dto.Password))
         {
             
@@ -89,6 +87,10 @@ public class UserController(
         }
 
         await userManager.UpdateAsync(model);
+        var roles = await userManager.GetRolesAsync(model);
+        await userManager.RemoveFromRolesAsync(model, roles);
+        if(!string.IsNullOrEmpty(dto.RoleName))
+            await userManager.AddToRoleAsync(model, dto.RoleName);
         if (!string.IsNullOrEmpty(dto.Password))
         {
             await userManager.RemovePasswordAsync(model);

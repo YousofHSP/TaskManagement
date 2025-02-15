@@ -1,61 +1,74 @@
-*{
-  font-family: "IranSans" !important;
-  direction: rtl;
+* {
+    font-family: "IranSans" !important;
+    direction: rtl;
 }
-.topbar .topbar-left{
-  float: right;
+
+.topbar .topbar-left {
+    float: right;
 }
-.navbar-custom{
-  margin-right: 270px;
-  margin-left: 0;
+
+.navbar-custom {
+    margin-right: 270px;
+    margin-left: 0;
 }
+
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
 }
-a{
-  text-decoration: none;
+
+a {
+    text-decoration: none;
 }
-.select2-selection{
-  border: 1px solid #e8ebf3 !important;
-  font-size: 13px;
-  height: 34px;
-  color: #50649c !important;
-  padding-left: 20px;
-  padding-right: 40px;
-  -webkit-box-shadow: none;
-          box-shadow: none;
-  border-radius: 40px;
+
+.select2-selection {
+    border: 1px solid #e8ebf3 !important;
+    font-size: 13px;
+    height: 34px;
+    color: #50649c !important;
+    padding-left: 20px;
+    padding-right: 40px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-radius: 40px;
 }
-.account-body .auth-form .form-control{
-  padding-left: 0;
-  padding-right: 40px;
+
+.account-body .auth-form .form-control {
+    padding-left: 0;
+    padding-right: 40px;
 }
-.account-body.accountbg{
-  background-image: url(../images/widgets/login.svg);
-  background-size: auto;
-  background-position: left;
-  background-repeat: no-repeat;
+
+.account-body.accountbg {
+    background-image: url(../images/widgets/login.svg);
+    background-size: auto;
+    background-position: left;
+    background-repeat: no-repeat;
 }
-.account-body .auth-page{
-  margin: 0 10%;
+
+.account-body .auth-page {
+    margin: 0 10%;
+}
+
+.input-group:not(.has-validation) > .dropdown-toggle:nth-last-child(n+3), .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-control, .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-select, .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }

@@ -24,6 +24,7 @@ public class Field
 }
 public class CreateViewModel
 {
+    public string Title { get; set; }
     public bool Error { get; set; }
     public List<Field> Fields { get; set; } = [];
 

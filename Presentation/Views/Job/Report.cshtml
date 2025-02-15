@@ -1,0 +1,75 @@
+@using Common.Utilities
+@using Data.Contracts
+@using Entity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Presentation.DTO.JobReportViewModel
+@inject IRepository<Customer> CustomerRepository
+@inject IRepository<User> UserRepository
+
+@{
+    ViewData["Title"] = "گزارش تسک";
+
+    var customerItems = CustomerRepository.TableNoTracking
+        .Select(x => new SelectListItem(x.Title, x.Id.ToString()))
+        .ToList();
+    var userItems = UserRepository.TableNoTracking
+        .Where(i => i.Id != 1)
+        .Select(x => new SelectListItem(x.FullName, x.Id.ToString()))
+        .ToList();
+    customerItems.Insert(0, new SelectListItem("انتخاب کنید", null));
+    userItems.Insert(0, new SelectListItem("انتخاب کنید", null));
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <form asp-action="Report" method="get">
+            <div class="row">
+                <div class="from-group col-md-4">
+                    <label asp-for="CustomerId"></label>
+                    <select asp-for="CustomerId" class="form-control select2" asp-items="customerItems"></select>
+                </div>
+                <div class="from-group col-md-4">
+                    <label asp-for="UserId"></label>
+                    <select asp-for="UserId" class="form-control select2" asp-items="userItems"></select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">جستجو</button>
+        </form>
+        <table class="table mt-3">
+            <thead>
+            <tr>
+                <th>عنوان</th>
+                <th>کاربر</th>
+                <th>مشتری</th>
+                <th>تاریخ شروع</th>
+                <th>تاریخ پایان</th>
+                <th>وضعیت</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var job in Model.Jobs)
+            {
+                <tr>
+                    <td>@job.Title</td>
+                    <td>@job.UserFullName</td>
+                    <td>@job.CustomerTitle</td>
+                    <td>@job.StartDateTime</td>
+                    <td>@job.EndDateTime</td>
+                    <td>@job.Status.ToDisplay()</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="row">
+
+            @foreach (var sumItem in Model.PlansSum)
+            {
+                <div class="col-3 d-flex">
+                    <div class="col">@sumItem.Key</div>
+                    <div class="col">@sumItem.Value</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
