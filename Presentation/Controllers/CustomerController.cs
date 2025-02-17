@@ -21,6 +21,7 @@ public class CustomerController(IRepository<Customer> repository, IRepository<Pl
         {
             AddField("Title", "عنوان");
             var customerItems = repository.TableNoTracking
+                .Where(i => i.ParentId == null)
                 .AsQueryable();
             
             if (Model is not null)

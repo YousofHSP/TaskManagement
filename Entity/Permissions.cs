@@ -4,10 +4,6 @@ public static class Permissions
 {
     public static List<Permission> All =
     [
-        new() { Controller = "User", Action = "Index", ControllerLabel = "کاربر", ActionLabel = "نمایش" },
-        new() { Controller = "User", Action = "Create", ControllerLabel = "کاربر", ActionLabel = "ایجاد" },
-        new() { Controller = "User", Action = "Edit", ControllerLabel = "کاربر", ActionLabel = "ویرایش" },
-        new() { Controller = "User", Action = "Delete", ControllerLabel = "کاربر", ActionLabel = "حذف" },
         
         new() { Controller = "Customer", ControllerLabel = "مشتری",  Action = "Index", ActionLabel = "نمایش" },
         new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Create",  ActionLabel = "ایجاد" },
@@ -29,11 +25,17 @@ public static class Permissions
         new() { Controller = "Plan", ControllerLabel = "پلن", Action = "Edit",  ActionLabel = "ویرایش" },
         new() { Controller = "Plan", ControllerLabel = "پلن", Action = "Delete", ActionLabel = "حذف" },
         
+        new() { Controller = "User", Action = "Index", ControllerLabel = "کاربر", ActionLabel = "نمایش" },
+        new() { Controller = "User", Action = "Create", ControllerLabel = "کاربر", ActionLabel = "ایجاد" },
+        new() { Controller = "User", Action = "Edit", ControllerLabel = "کاربر", ActionLabel = "ویرایش" },
+        new() { Controller = "User", Action = "Delete", ControllerLabel = "کاربر", ActionLabel = "حذف" },
+        
         new() { Controller = "Job", ControllerLabel = "تسک",  Action = "Index", ActionLabel = "نمایش" },
         new() { Controller = "Job", ControllerLabel = "تسک", Action = "Create",  ActionLabel = "ایجاد" },
         new() { Controller = "Job", ControllerLabel = "تسک", Action = "Edit",  ActionLabel = "ویرایش" },
         new() { Controller = "Job", ControllerLabel = "تسک", Action = "Delete", ActionLabel = "حذف" },
         new() { Controller = "Job", ControllerLabel = "تسک", Action = "Report", ActionLabel = "گزارش" },
+        new() { Controller = "Job", Action = "ShowAllInfo", ControllerLabel = "تسک", ActionLabel = "نمایش اطلاعات دیگران" },
     ];
 }
 

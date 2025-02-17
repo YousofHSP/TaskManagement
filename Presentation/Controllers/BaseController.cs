@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Attributes;
 using Presentation.DTO;
+using Presentation.Helpers;
 using Presentation.Models;
 
 namespace Presentation.Controllers;
@@ -39,6 +40,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _includes = includes;
     }
 
+    protected void AddListAction(string title, string cls, string url)
+    {
+        _indexViewModel.ListActions.Add(new() {Class = cls, Title = title, Url = url});
+    }
     protected void AddCondition(Expression<Func<TEntity, bool>> condition)
     {
         _conditions.Add(condition);
@@ -87,10 +92,16 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     }
     public virtual async Task Configure(string method, CancellationToken ct)
     {
-        _indexViewModel.ViewSetting.Create = true;
-        _indexViewModel.ViewSetting.Edit = true;
-        _indexViewModel.ViewSetting.Delete = true;
 
+
+        _indexViewModel.ViewSetting.Create = false;
+        var controllerName = ControllerContext.ActionDescriptor.ControllerName;
+        if(CheckPermission.Check(User, $"{controllerName}.Create"))
+            _indexViewModel.ViewSetting.Create = true;
+        if(CheckPermission.Check(User, $"{controllerName}.Edit"))
+            AddListAction("ویرایش", "fa fa-pencil", "Edit");
+        if(CheckPermission.Check(User, $"{controllerName}.Delete"))
+            AddListAction("حذف", "fa fa-trash", "Delete");
         
         var resDtoProperties = typeof(TResDto).GetProperties();
         foreach (var property in resDtoProperties)
@@ -123,7 +134,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         if(_conditions.Count > 0)
             foreach (var condition in _conditions)
                 list = list.Where(condition).AsQueryable();
-        var queryRes = await list.ToListAsync(ct);
+        var queryRes = await list.OrderDescending().ToListAsync(ct);
         var res = mapper.Map<List<TResDto>>(queryRes);
         _indexViewModel.Rows = res;
         _indexViewModel.Columns = Columns;

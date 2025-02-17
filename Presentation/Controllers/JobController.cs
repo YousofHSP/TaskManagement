@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
+using Presentation.Helpers;
 using Presentation.Models;
 
 namespace Presentation.Controllers;
@@ -25,15 +26,8 @@ public class JobController(
         await base.Configure(method, ct);
         SetTitle("تسک");
         SetIncludes("Customer", "User", "Parent", "Event", "Plan");
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.Title), nameof(JobResDto.Title));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.UserFullName), nameof(JobResDto.UserFullName));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.CustomerTitle), nameof(JobResDto.CustomerTitle));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.ParentTitle), nameof(JobResDto.ParentTitle));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.EventTitle), nameof(JobResDto.EventTitle));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.PlanTitle), nameof(JobResDto.PlanTitle));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.Description), nameof(JobResDto.Description));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.StartDateTime), nameof(JobResDto.StartDateTime));
-        // AddColumn(ModelExtensions.ToDisplay<JobResDto>(i => i.EndDateTime), nameof(JobResDto.EndDateTime));
+        if(!CheckPermission.Check(User, "Job.ShowAllInfo"))
+            AddCondition(i => i.UserId == User.Identity!.GetUserId<int>());
 
         var users = await userRepository.TableNoTracking.Where(i => i.Id != 1).ToListAsync(ct);
         var customers = await customerRepository.TableNoTracking.ToListAsync(ct);
@@ -128,6 +122,9 @@ public class JobController(
             jobsQuery = jobsQuery.Where(i => i.UserId == dto.UserId);
         if (dto.CustomerId is not null)
             jobsQuery = jobsQuery.Where(i => i.CustomerId == dto.CustomerId);
+
+        if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
+            jobsQuery = jobsQuery.Where(i => i.UserId == User.Identity!.GetUserId<int>());
         var jobs = await jobsQuery.ToListAsync(ct);
         var plans = await planRepository.TableNoTracking.ToListAsync(ct);
         var plansSums = new Dictionary<string, int>();

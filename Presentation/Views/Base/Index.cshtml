@@ -10,63 +10,67 @@
     ViewData["Title"] = "لیست " + Model.Title;
 }
 
-<div class="card">
-    <div class="card-body">
-        <div class="col-12 mb-3">
-            @if (filters is not null && filters.Any())
-            {
-                <div class="accordion border-0" id="filters-accordion">
-                    <div class="accordion-item border-0" id="heading-filters">
-                        <div id="collapse-filters" class="accordion-collapse collapse" aria-labelledby="heading-filters"
-                             data-bs-parent="#filters-accordion">
-                            <div class="accordion-body">
+@if (filters is not null && filters.Any())
+{
+    <div class="card mb-3">
+        <div class="card-body p-1">
+            <div class="accordion border-0" id="filters-accordion">
+                <div class="card shadow-none border mb-0">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="my-0">
+                            <button class="btn btn-link ml-4 align-self-center collapsed" type="button"
+                                    style="box-shadow: none; text-decoration: none"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-filters" aria-expanded="false"
+                                    aria-controls="collapse-filters" autocomplete="off">
+                                فیلتر پیشرفته
+                            </button>
+                        </h5>
+                    </div>
 
-                                <form asp-action="Index" method="get">
-                                    <div class="row">
-                                        @foreach (var filter in filters)
+                    <div id="collapse-filters" class="accordion-collapse collapse" aria-labelledby="heading-filters"
+                         data-bs-parent="#filters-accordion">
+                        <div class="accordion-body">
+
+                            <form asp-action="Index" method="get">
+                                <div class="row">
+                                    @foreach (var filter in filters)
+                                    {
+                                        var selectedValue = selectedFilters?.GetValueOrDefault(filter.Name);
+                                        if (!string.IsNullOrEmpty(selectedValue))
                                         {
-                                            var selectedValue = selectedFilters?.GetValueOrDefault(filter.Name);
-                                            if (!string.IsNullOrEmpty(selectedValue))
+                                            filter.Items = filter.Items.Select(i =>
                                             {
-                                                filter.Items = filter.Items.Select(i =>
-                                                {
-                                                    if (i.Value == selectedValue)
-                                                        i.Selected = true;
-                                                    return i;
-                                                }).ToList();
-                                            }
-
-                                            <div class="form-group col-md-4">
-                                                <label for="@filter.Name">@filter.Label</label>
-                                                <select class="form-control select2" name="Filters[@filter.Name]"
-                                                        asp-items="@filter.Items">
-                                                </select>
-
-                                            </div>
+                                                if (i.Value == selectedValue)
+                                                    i.Selected = true;
+                                                return i;
+                                            }).ToList();
                                         }
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">جستجو</button>
-                                </form>
-                            </div>
+
+                                        <div class="form-group col-md-4">
+                                            <label for="@filter.Name">@filter.Label</label>
+                                            <select class="form-control select2" name="Filters[@(filter.Name)]"
+                                                    asp-items="@filter.Items">
+                                            </select>
+
+                                        </div>
+                                    }
+                                </div>
+                                <button type="submit" class="btn btn-primary">جستجو</button>
+                            </form>
                         </div>
                     </div>
                 </div>
-            }
-
-
+            </div>
         </div>
+    </div>
+}
+<div class="card">
+    <div class="card-body">
+
         <div class="d-flex justify-content-between">
             @if (model.ViewSetting.Create)
             {
-                <a asp-action="Create" class="btn btn-round btn-primary"><i class="dripicons-document-new"></i></a>
-            }
-
-            @if (filters is not null && filters.Any())
-            {
-                <button class="btn btn-success mr-2 p-2" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapse-filters" aria-expanded="true" aria-controls="collapse-filters">
-                    جستجو
-                </button>
+                <a asp-action="Create" class="btn btn-primary">افزودن</a>
             }
         </div>
         <table class="table table-hover mt-2">
@@ -76,7 +80,7 @@
                 {
                     <td>@item.Name</td>
                 }
-                @if (model.ViewSetting.Delete || model.ViewSetting.Edit)
+                @if (model.ListActions.Count > 0)
                 {
                     <td>عملیات</td>
                 }
@@ -102,19 +106,28 @@
 
                         <td>@value</td>
                     }
-                    @if (model.ViewSetting.Edit || model.ViewSetting.Delete)
+                    @if (model.ListActions.Count > 0)
                     {
                         <td>
-                            @if (model.ViewSetting.Edit)
-                            {
-                                <a asp-action="Edit" asp-route-id="@row.Id" class="btn btn-round btn-primary"><i
-                                        class="dripicons-document-edit"></i></a>
-                            }
-                            @if (model.ViewSetting.Delete)
-                            {
-                                <a asp-action="Delete" asp-route-id="@row.Id" class="btn btn-round btn-danger"><i
-                                        class="dripicons-document-delete"></i></a>
-                            }
+                            <div class="dropdown d-inline-block">
+                                <a class="nav-link dropdown-toggle arrow-none" style="padding: .5rem 1rem"
+                                   data-bs-toggle="dropdown"
+                                   href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                     style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+
+                                    @foreach (var listAction in (model.ListActions as List<ListAction>)!)
+                                    {
+                                        <a asp-action="@listAction.Url" asp-route-id="@row.Id" class="dropdown-item">
+                                            <i
+                                                class="@listAction.Class"></i>
+                                            @listAction.Title
+                                        </a>
+                                    }
+                                </div>
+                            </div>
                         </td>
                     }
                 </tr>

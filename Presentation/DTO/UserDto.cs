@@ -37,8 +37,6 @@ public class UserResDto : BaseDto<UserResDto, User>
     public string PhoneNumber { get; set; } = null!;
     [Display(Name = "نقش")]
     public string RoleName { get; set; } = null!;
-    [Display(Name = "وضیعت")] 
-    public UserStatus Status { get; set; }
 
     protected override void CustomMappings(IMappingExpression<User, UserResDto> mapping)
     {

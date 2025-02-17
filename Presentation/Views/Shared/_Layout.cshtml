@@ -1,4 +1,8 @@
 ﻿@using System.Security.Claims
+@using Common.Utilities
+@{
+    var userFullName = User.Identity?.GetFullName();
+}
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -11,8 +15,9 @@
     <link rel="stylesheet" href="~/css/font.css" />
     <link rel="stylesheet" href="~/plugins/select2/select2.min.css" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/persian-datepicker.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/plugins/font-awesome-4/css/font-awesome.css" />
 </head>
 <body>
 <div class="topbar">
@@ -35,7 +40,7 @@
                    role="button"
                    aria-haspopup="false" aria-expanded="false">
                     <img src="~/images/users/user-1.jpg" alt="profile-user" class="rounded-circle"/>
-                    <span class="ml-1 nav-user-name hidden-sm">@User.FindFirst(ClaimTypes.GivenName)?.Value <i class="mdi mdi-chevron-down"></i> </span>
+                    <span class="ml-1 nav-user-name hidden-sm">@userFullName <i class="mdi mdi-chevron-down"></i> </span>
                 </a>
                 <div class="dropdown-menu">
                     @* <div class="dropdown-divider"></div> *@

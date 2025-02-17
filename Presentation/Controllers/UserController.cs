@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using DTO;
@@ -96,6 +97,18 @@ public class UserController(
             await userManager.RemovePasswordAsync(model);
             await userManager.AddPasswordAsync(model, dto.Password);
         }
+        return RedirectToAction(nameof(Index));
+    }
+
+    public override async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var model = await userManager.FindByIdAsync(id.ToString());
+        if (model is null)
+            throw new NotFoundException();
+        var roles = await userManager.GetRolesAsync(model);
+        await userManager.RemoveFromRolesAsync(model, roles);
+
+        await userManager.DeleteAsync(model);
         return RedirectToAction(nameof(Index));
     }
 }

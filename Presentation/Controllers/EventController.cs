@@ -12,8 +12,6 @@ public class EventController(IRepository<Event> repository, IMapper mapper) : Ba
     {
         await base.Configure(method, ct);
         SetTitle("رویداد");
-        AddColumn(ModelExtensions.ToDisplay<EventDto>(i => i.Title), nameof(EventDto.Title));
-        AddColumn(ModelExtensions.ToDisplay<EventDto>(i => i.Description), nameof(EventDto.Description));
         
         AddField(nameof(EventDto.Title), ModelExtensions.ToDisplay<EventDto>(i => i.Title));
         AddField(nameof(EventDto.Description), ModelExtensions.ToDisplay<EventDto>(i => i.Description));

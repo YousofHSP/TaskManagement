@@ -20,8 +20,11 @@ public class CustomerDto : BaseDto<CustomerDto, Customer>
 }
 public class CustomerResDto: BaseDto<CustomerResDto, Customer>
 {
+    [Display(Name = "عنوان")]
     public string Title { get; set; }
+    [Display(Name = "والد")]
     public string ParentTitle { get; set; }
+    [Display(Name = "پلن")]
     public string PlanTitle { get; set; }
     
 }

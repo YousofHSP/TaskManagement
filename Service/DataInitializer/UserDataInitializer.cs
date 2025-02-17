@@ -26,7 +26,7 @@ public class UserDataInitializer: IDataInitializer
                 PhoneNumber = "09140758738",
                 Email = "admin@gmail.com",
                 NormalizedUserName = "ADMIN",
-                FullName = "yousof",
+                FullName = "مدیرسیستم",
                 Gender = GenderType.Male,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
