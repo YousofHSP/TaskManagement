@@ -122,9 +122,20 @@ public class JobController(
             jobsQuery = jobsQuery.Where(i => i.UserId == dto.UserId);
         if (dto.CustomerId is not null)
             jobsQuery = jobsQuery.Where(i => i.CustomerId == dto.CustomerId);
+        if (!string.IsNullOrEmpty(dto.StartDateTime))
+        {
+            var startDateTime = dto.StartDateTime.ToGregorian();
+            jobsQuery = jobsQuery.Where(i => i.StartDateTime <= startDateTime && i.EndDateTime >= startDateTime);
+        }
+        if (!string.IsNullOrEmpty(dto.EndDateTime))
+        {
+            var endDateTime = dto.EndDateTime.ToGregorian();
+            jobsQuery = jobsQuery.Where(i => i.EndDateTime >= endDateTime && i.StartDateTime <= endDateTime);
+        }
 
         if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
             jobsQuery = jobsQuery.Where(i => i.UserId == User.Identity!.GetUserId<int>());
+        
         var jobs = await jobsQuery.ToListAsync(ct);
         var plans = await planRepository.TableNoTracking.ToListAsync(ct);
         var plansSums = new Dictionary<string, int>();

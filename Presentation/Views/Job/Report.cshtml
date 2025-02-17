@@ -20,22 +20,58 @@
     userItems.Insert(0, new SelectListItem("انتخاب کنید", null));
 }
 
-<div class="card">
-    <div class="card-body">
-
-        <form asp-action="Report" method="get">
-            <div class="row">
-                <div class="from-group col-md-4">
-                    <label asp-for="CustomerId"></label>
-                    <select asp-for="CustomerId" class="form-control select2" asp-items="customerItems"></select>
+<div class="card mb-3">
+    <div class="card-body p-1">
+        <div class="accordion border-0" id="filters-accordion">
+            <div class="card shadow-none border mb-0">
+                <div class="card-header" id="headingOne">
+                    <h5 class="my-0">
+                        <button class="btn btn-link ml-4 align-self-center collapsed" type="button"
+                                style="box-shadow: none; text-decoration: none"
+                                data-bs-toggle="collapse" data-bs-target="#collapse-filters" aria-expanded="false"
+                                aria-controls="collapse-filters" autocomplete="off">
+                            فیلتر پیشرفته
+                        </button>
+                    </h5>
                 </div>
-                <div class="from-group col-md-4">
-                    <label asp-for="UserId"></label>
-                    <select asp-for="UserId" class="form-control select2" asp-items="userItems"></select>
+
+                <div id="collapse-filters" class="accordion-collapse collapse" aria-labelledby="heading-filters"
+                     data-bs-parent="#filters-accordion">
+                    <div class="accordion-body">
+
+                        <form asp-action="Report" method="get">
+                            <div class="row">
+                                <div class="from-group col-md-3">
+                                    <label asp-for="StartDateTime"></label>
+                                    <input type="text" asp-for="StartDateTime" class="form-control date-picker">
+                                </div>
+                                <div class="from-group col-md-3">
+                                    <label asp-for="EndDateTime"></label>
+                                    <input type="text" asp-for="EndDateTime" class="form-control date-picker">
+                                </div>
+
+                                <div class="from-group col-md-3">
+                                    <label asp-for="CustomerId"></label>
+                                    <select asp-for="CustomerId" class="form-control select2"
+                                            asp-items="customerItems"></select>
+                                </div>
+                                <div class="from-group col-md-3">
+                                    <label asp-for="UserId"></label>
+                                    <select asp-for="UserId" class="form-control select2"
+                                            asp-items="userItems"></select>
+                                </div>
+
+                            </div>
+                            <button type="submit" class="btn mt-2 btn-primary">جستجو</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">جستجو</button>
-        </form>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
         <table class="table mt-3">
             <thead>
             <tr>

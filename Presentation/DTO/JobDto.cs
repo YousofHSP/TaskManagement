@@ -116,6 +116,11 @@ public class JobReportViewModel
     public int? CustomerId { get; set; }
     [Display(Name = "کاربر")]
     public int? UserId { get; set; }
+
+    [Display(Name = "زمان شروع")]
+    public string? StartDateTime { get; set; }
+    [Display(Name = "زمان پایان")]
+    public string? EndDateTime { get; set; }
     public List<JobResDto> Jobs { get; set; }
     public Dictionary<string, string> PlansSum { get; set; }
 }

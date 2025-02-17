@@ -83,3 +83,6 @@ a {
 .main-icon-menu .nav-link i{
     font-size: 25px !important;
 }
+.left-sidenav .main-icon-menu {
+    background-color: #1a233a;
+}
