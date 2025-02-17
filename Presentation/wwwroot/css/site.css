@@ -77,3 +77,9 @@ a {
 .btn{
     border-radius: 8px;
 }
+.main-icon-menu .nav-link.active{
+    color: #fff !important;
+}
+.main-icon-menu .nav-link i{
+    font-size: 25px !important;
+}

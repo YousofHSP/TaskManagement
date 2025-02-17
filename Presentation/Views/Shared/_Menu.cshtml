@@ -1,49 +1,109 @@
 @using Presentation.Helpers
-<ul class="metismenu left-sidenav-menu">
-    <li>
-        <a asp-action="Index" asp-controller="Home"><i class="dripicons-meter"></i>داشبورد</a>
-    </li>
-    @if (CheckPermission.Check(User, "Customer.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="Customer"><i class="dripicons-user-group"></i>مشتری</a>
-        </li>
-    }
-    @if (CheckPermission.Check(User, "User.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="User"><i class="dripicons-user"></i>کاربر</a>
-        </li>
-    }
 
-    @if (CheckPermission.Check(User, "Role.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="Role"><i class="dripicons-lock"></i>نقش</a>
-        </li>
-    }
-    @if (CheckPermission.Check(User, "Event.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="Event"><i class="dripicons-feed"></i>رویداد</a>
-        </li>
-    }
-    @if (CheckPermission.Check(User, "Plan.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="Plan"><i class="dripicons-box"></i>پلن</a>
-        </li>
-    }
-    @if (CheckPermission.Check(User, "Job.Index"))
-    {
-        <li>
-            <a asp-action="Index" asp-controller="Job"><i class="dripicons-tag"></i>تسک</a>
-        </li>
-    }
-    @if (CheckPermission.Check(User, "Job.Report"))
-    {
-        <li>
-            <a asp-action="Report" asp-controller="Job"><i class="dripicons-tags"></i>گزارش تسک</a>
-        </li>
-    }
-</ul>
+<div class="main-icon-menu">
+    <nav class="nav">
+        <a href="#Dashboard" class="nav-link">
+            <i class="fa fa-home"></i>
+        </a>
+        <a href="#Job" class="nav-link">
+            <i class="fa fa-tasks"></i>
+        </a>
+        <a href="#BaseInfo" class="nav-link">
+            <i class="fa fa-info-circle"></i>
+        </a>
+    </nav>
+</div>
+<div class="main-menu-inner">
+    <div class="menu-body slimscroll">
+        <div class="main-icon-menu-pane" id="Dashboard">
+            <div class="title-box">
+                <h6 class="menu-title">خانه</h6>
+            </div>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Index" asp-controller="Home"><i class="dripicons-meter"></i>داشبورد</a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="main-icon-menu-pane" id="BaseInfo">
+            <div class="title-box">
+                <h6 class="menu-title">اطلاعات پایه</h6>
+            </div>
+            <ul class="nav metismenu">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" aria-expanded="true">
+                        <i class="dripicons-user-group"></i>
+                        <span class="w-100">ناحیه کاربری</span>
+                        <span class="menu-arrow">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="nav-second-level" aria-expanded="false">
+                        @if (CheckPermission.Check(User, "User.Index"))
+                        {
+                            <li>
+                                <a asp-action="Index" asp-controller="User">کاربر</a>
+                            </li>
+                        }
+
+                        @if (CheckPermission.Check(User, "Role.Index"))
+                        {
+                            <li>
+                                <a asp-action="Index" asp-controller="Role">نقش</a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                @if (CheckPermission.Check(User, "Customer.Index"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Index" asp-controller="Customer">
+                            <i
+                                class="dripicons-user-group"></i>مشتری</a>
+                    </li>
+                }
+
+                <!--end nav-item-->
+                @if (CheckPermission.Check(User, "Event.Index"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Index" asp-controller="Event"><i class="dripicons-feed"></i>رویداد</a>
+                    </li>
+                }
+                @if (CheckPermission.Check(User, "Plan.Index"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Index" asp-controller="Plan">
+                            <i
+                                class="dripicons-box"></i>پلن</a>
+                    </li>
+                }
+            </ul>
+
+        </div>
+        <div class="main-icon-menu-pane" id="Job">
+            <div class="title-box">
+                <h6 class="menu-title">تسک</h6>
+            </div>
+            <ul class="nav">
+                @if (CheckPermission.Check(User, "Job.Index"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Index" asp-controller="Job"><i class="dripicons-tag"></i>تسک</a>
+                    </li>
+                }
+                @if (CheckPermission.Check(User, "Job.Report"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-action="Report" asp-controller="Job"><i class="dripicons-tags"></i>گزارش
+                            تسک</a>
+                    </li>
+                }
+            </ul>
+
+        </div>
+    </div>
+</div>
+@* <ul class="metismenu left-sidenav-menu"> *@
+@* </ul> *@
