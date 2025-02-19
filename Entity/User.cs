@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entity;
 
+[Display(Name = "کاربران")]
 public class User : IdentityUser<int>, IEntity<int>
 {
     [Required] [StringLength(100)] public string FullName { get; set; } = null!;

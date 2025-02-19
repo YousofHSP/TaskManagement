@@ -15,7 +15,6 @@ public class RoleController(IRepository<Role> repository, RoleManager<Role> role
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetTitle("نقش");
         AddCondition(i => i.Name != "Admin");
         
     }

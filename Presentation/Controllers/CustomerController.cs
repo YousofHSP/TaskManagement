@@ -14,7 +14,6 @@ public class CustomerController(IRepository<Customer> repository, IRepository<Pl
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetTitle("مشتریان");
         SetIncludes("Parent", "Plan");
 
         if (method is "create" or "edit")

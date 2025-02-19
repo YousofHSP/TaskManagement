@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using AutoMapper;
 using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
@@ -24,10 +26,9 @@ public class UserController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetTitle("کاربران");
         SetIncludes("Roles");
 
-        var roles = await roleRepository.TableNoTracking.Where(i => i.Name != "Admin").Select(i => new SelectListItem(i.Name, i.Name)).ToListAsync(ct);
+        var roles= await roleRepository.GetSelectListItems(nameof(Role.Name), nameof(Role.Name), i => i.Name != "Admin" ,ct);
         AddField(nameof(UserDto.FullName), ModelExtensions.ToDisplay<UserDto>(i => i.FullName));
         AddField(nameof(UserDto.PhoneNumber), ModelExtensions.ToDisplay<UserDto>(i => i.PhoneNumber));
         AddField(nameof(UserDto.Password), ModelExtensions.ToDisplay<UserDto>(i => i.Password));

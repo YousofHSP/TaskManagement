@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entity;
 
+[Display(Name = "تسک")]
 public class Job:BaseEntity
 {
     public string Title { get; set; }

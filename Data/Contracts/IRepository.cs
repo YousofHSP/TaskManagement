@@ -1,6 +1,7 @@
 ﻿using Entity.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Data.Contracts
 {
@@ -30,5 +31,6 @@ namespace Data.Contracts
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true);
         void UpdateRange(IEnumerable<TEntity> entities, bool saveNow = true);
         Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool saveNow = true);
+        Task<List<SelectListItem>> GetSelectListItems(string text = "Title", string value = "Id",Expression<Func<TEntity, bool>>? whereFunc = null,  CancellationToken ct = default);
     }
 }

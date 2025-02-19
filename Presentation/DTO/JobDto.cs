@@ -4,6 +4,7 @@ using AutoMapper;
 using DTO;
 using Entity;
 using Common.Utilities;
+using Presentation.Attributes;
 
 namespace Presentation.DTO;
 

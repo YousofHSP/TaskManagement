@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using System.Reflection;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Common.Utilities;
@@ -95,6 +96,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
 
         _indexViewModel.ViewSetting.Create = false;
+        
+        
+        var title = typeof(TEntity).GetCustomAttribute<DisplayAttribute>()?.Name ?? "";
+        SetTitle(title);
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;
         if(CheckPermission.Check(User, $"{controllerName}.Create"))
             _indexViewModel.ViewSetting.Create = true;

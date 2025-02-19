@@ -24,12 +24,17 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetTitle("تسک");
         SetIncludes("Customer", "User", "Parent", "Event", "Plan");
-        if(!CheckPermission.Check(User, "Job.ShowAllInfo"))
-            AddCondition(i => i.UserId == User.Identity!.GetUserId<int>());
 
-        var users = await userRepository.TableNoTracking.Where(i => i.Id != 1).ToListAsync(ct);
+        var usersQ = userRepository.TableNoTracking
+            .Where(i => i.Id != 1)
+            .AsQueryable();
+        if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
+        {
+            AddCondition(i => i.UserId == User.Identity!.GetUserId<int>());
+            usersQ = usersQ.Where(i => i.Id == User.Identity!.GetUserId<int>());
+        }
+        var users = await usersQ.ToListAsync(ct);
         var customers = await customerRepository.TableNoTracking.ToListAsync(ct);
         var events = await eventRepository.TableNoTracking.ToListAsync(ct);
         var plans = await planRepository.TableNoTracking.ToListAsync(ct);

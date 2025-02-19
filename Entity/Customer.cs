@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using Entity.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Entity;
 
+[Display(Name = "مشتریان")]
 public class Customer: BaseEntity
 {
     public string Title { get; set; }

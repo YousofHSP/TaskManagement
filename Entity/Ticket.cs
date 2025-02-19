@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Entity
 {
+    [Display(Name = "تیکت")]
     public class Ticket: BaseEntity
     {
         public string Title { get; set; } = null!;

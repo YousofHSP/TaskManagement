@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Entity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace Data.Reprositories
@@ -67,14 +68,15 @@ namespace Data.Reprositories
             var entityString = JsonConvert.SerializeObject(entity);
             var entry = dbContext.Entry(entity);
             var oldEntity = entry.OriginalValues.Clone();
-            var oldEntityString = JsonConvert.SerializeObject(oldEntity.Properties.ToDictionary(i => i.Name, i => oldEntity[i]));
+            var oldEntityString =
+                JsonConvert.SerializeObject(oldEntity.Properties.ToDictionary(i => i.Name, i => oldEntity[i]));
             var userId = _httpContextAccessor.HttpContext?.User.Identity?.GetUserId<int>() ?? 0;
             var audit = new Audit
             {
                 CreatedAt = DateTimeOffset.Now,
                 Model = entity.GetType().Name,
                 Method = "Update",
-                OldValue = oldEntityString, 
+                OldValue = oldEntityString,
                 NewValue = entityString,
                 UserId = userId
             };
@@ -93,6 +95,24 @@ namespace Data.Reprositories
                 await dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task<List<SelectListItem>> GetSelectListItems(
+            string text = "Title",
+            string value = "Id",
+            Expression<Func<TEntity, bool>>? whereFunc = null,
+            CancellationToken ct = default
+        )
+        {
+            var query = TableNoTracking.AsQueryable();
+            if (whereFunc is not null)
+                query = query.Where(whereFunc);
+            var list = await query.ToListAsync(ct);
+            return list.Select(entity => new SelectListItem
+            {
+                Text = entity.GetType().GetProperty(text)?.GetValue(entity)?.ToString() ?? "N/A",
+                Value = entity.GetType().GetProperty(value)?.GetValue(entity)?.ToString() ?? "0"
+            }).ToList();
+        }
+
         public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)
         {
             Assert.NotNull(entity, nameof(entity));
@@ -102,7 +122,7 @@ namespace Data.Reprositories
                 CreatedAt = DateTimeOffset.Now,
                 Model = entity.GetType().Name,
                 Method = "Delete",
-                OldValue = "", 
+                OldValue = "",
                 NewValue = "",
                 UserId = userId
             };
