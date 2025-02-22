@@ -9,7 +9,7 @@ using Presentation.Models;
 
 namespace Presentation.Controllers;
 
-public class CustomerController(IRepository<Customer> repository, IRepository<Plan> planRepository, IMapper mapper) : BaseController<CustomerDto,CustomerResDto, Customer>(repository, mapper)
+public class CustomerController(IRepository<Customer> repository, IMapper mapper) : BaseController<CustomerDto,CustomerResDto, Customer>(repository, mapper)
 {
     public override async Task Configure(string method, CancellationToken ct)
     {
@@ -18,18 +18,17 @@ public class CustomerController(IRepository<Customer> repository, IRepository<Pl
 
         if (method is "create" or "edit")
         {
-            AddField("Title", "عنوان");
-            var customerItems = repository.TableNoTracking
-                .Where(i => i.ParentId == null)
-                .AsQueryable();
-            
+            List<SelectListItem> res;
             if (Model is not null)
-                customerItems = customerItems.Where(i => i.Id != Model.Id);
-            var res = await customerItems
-                .ToListAsync(ct);
-            AddField("ParentId", "والد", FieldType.Select, Model?.ParentId?.ToString() ?? "",res.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList());
-            var plansItem = await planRepository.TableNoTracking.ToListAsync(ct);
-            AddField("PlanId", "پلن", FieldType.Select, Model?.PlanId.ToString() ?? "",plansItem.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList());
+                res = await repository.GetSelectListItems(whereFunc: i => i.Id != Model.Id, ct: ct);
+            else
+                res = await repository.GetSelectListItems(ct: ct);
+
+            var selectedParent = Model?.ParentId;
+            if (selectedParent != null)
+                foreach (var p in res.Where(p => p.Value == selectedParent.ToString()))
+                    p.Selected = true;
+            AddOptions(nameof(CustomerDto.ParentId),res);
         }
     }
 }

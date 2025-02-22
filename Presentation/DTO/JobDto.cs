@@ -5,6 +5,7 @@ using DTO;
 using Entity;
 using Common.Utilities;
 using Presentation.Attributes;
+using Presentation.Models;
 
 namespace Presentation.DTO;
 
@@ -13,38 +14,44 @@ public class JobDto:BaseDto<JobDto, Job>
 
     [Display(Name = "عنوان")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Text)]
     public string Title { get; set; }
     
     [Display(Name = "کاربر")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Select)]
     public int UserId { get; set; }
     
     [Display(Name = "مشتری")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Select)]
     public int CustomerId { get; set; }
     
     [Display(Name = "والد")]
+    [Field(FieldType.Select)]
     public int? ParentId { get; set; }
     
-    [Display(Name = "پلن")]
-    [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
-    public int PlanId { get; set; }
-    
-    [Display(Name = "توضیحات")]
-    public string Description { get; set; }
     
     [Display(Name = "رویداد")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Select)]
     public int EventId { get; set; }
     
     [Display(Name = "تاریخ شروع")]
-    public string StartedAt { get; set; }
+    [Field(FieldType.DateTime)]
+    public string? StartedAt { get; set; }
     
     [Display(Name = "تاریخ پایان")]
-    public string EndedAt { get; set; }
+    [Field(FieldType.DateTime)]
+    public string? EndedAt { get; set; }
 
     [Display(Name = "وضعیت")]
+    [Field(FieldType.Select)]
     public JobStatus Status { get; set; }
+
+    [Display(Name = "توضیحات")]
+    [Field(FieldType.Text)]
+    public string? Description { get; set; } = "";
     protected override void CustomMappings(IMappingExpression<Job, JobDto> mapping)
     {
         mapping.ForMember(
@@ -82,8 +89,6 @@ public class JobResDto: BaseDto<JobResDto, Job>
     public string CustomerTitle { get; set; }
     [Display(Name = "والد")]
     public string ParentTitle { get; set; }
-    [Display(Name = "پلن")]
-    public string PlanTitle { get; set; }
     [Display(Name = "رویداد")]
     public string EventTitle { get; set; }
     [Display(Name = "توضیحات")]

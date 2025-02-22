@@ -30,9 +30,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     private List<Column> Columns = [];
     private readonly IndexViewModel<TResDto> _indexViewModel = new();
     protected readonly CreateViewModel CreateViewModel = new();
+    protected Dictionary<string, List<SelectListItem>> Options = new();
     protected readonly EditViewModel EditViewModel = new();
     private List<string> _includes = [];
-    private List<Expression<Func<TEntity,bool>>> _conditions = [];
+    private List<Expression<Func<TEntity, bool>>> _conditions = [];
     private List<SumType<TEntity>> Sums = new();
     protected TEntity? Model { get; private set; }
 
@@ -41,10 +42,16 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _includes = includes;
     }
 
+    protected void AddOptions(string name, List<SelectListItem> options)
+    {
+        Options.Add(name, options);
+    }
+
     protected void AddListAction(string title, string cls, string url)
     {
-        _indexViewModel.ListActions.Add(new() {Class = cls, Title = title, Url = url});
+        _indexViewModel.ListActions.Add(new() { Class = cls, Title = title, Url = url });
     }
+
     protected void AddCondition(Expression<Func<TEntity, bool>> condition)
     {
         _conditions.Add(condition);
@@ -77,7 +84,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     {
         items ??= [];
         if (type is FieldType.Select or FieldType.MultiSelect)
-            items.Insert(0, new SelectListItem("انتخاب کنید", ""));
+            items.Insert(0, new SelectListItem("انتخاب کنید", "0"));
         CreateViewModel.Fields.Add(new Field
             { Label = label, Name = name, Type = type, Value = value, Items = items });
     }
@@ -91,33 +98,31 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _indexViewModel.Filters.Add(new Field
             { Label = label, Name = name, Type = type, Value = value, Items = items });
     }
+
     public virtual async Task Configure(string method, CancellationToken ct)
     {
-
-
         _indexViewModel.ViewSetting.Create = false;
-        
-        
+
+
         var title = typeof(TEntity).GetCustomAttribute<DisplayAttribute>()?.Name ?? "";
         SetTitle(title);
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;
-        if(CheckPermission.Check(User, $"{controllerName}.Create"))
+        if (CheckPermission.Check(User, $"{controllerName}.Create"))
             _indexViewModel.ViewSetting.Create = true;
-        if(CheckPermission.Check(User, $"{controllerName}.Edit"))
+        if (CheckPermission.Check(User, $"{controllerName}.Edit"))
             AddListAction("ویرایش", "fa fa-pencil", "Edit");
-        if(CheckPermission.Check(User, $"{controllerName}.Delete"))
+        if (CheckPermission.Check(User, $"{controllerName}.Delete"))
             AddListAction("حذف", "fa fa-trash", "Delete");
-        
+
         var resDtoProperties = typeof(TResDto).GetProperties();
         foreach (var property in resDtoProperties)
         {
-            if(property.Name == "Id") continue;
+            if (property.Name == "Id") continue;
             var attr = property.GetCustomAttributes(typeof(DisplayAttribute), false).First() as DisplayAttribute;
-            if(attr?.Name is null)
+            if (attr?.Name is null)
                 continue;
             AddColumn(attr.Name, property.Name);
         }
-
     }
 
     [HttpGet]
@@ -133,10 +138,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
         if (model.Filters.Count != 0)
             foreach (var filter in model.Filters)
-                if(!string.IsNullOrEmpty(filter.Value))
+                if (!string.IsNullOrEmpty(filter.Value))
                     list = list.Where($"{filter.Key} == @0", filter.Value);
 
-        if(_conditions.Count > 0)
+        if (_conditions.Count > 0)
             foreach (var condition in _conditions)
                 list = list.Where(condition).AsQueryable();
         var queryRes = await list.OrderDescending().ToListAsync(ct);
@@ -152,7 +157,6 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
             {
                 var timeSpan = TimeSpan.FromMinutes(sumRow);
                 sumItems.Add(sum.Title, $"{(int)timeSpan.TotalHours:D2}:{timeSpan.Minutes:D2}");
-                
             }
             else
             {
@@ -161,7 +165,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         }
 
         ViewBag.Sums = sumItems;
-            
+
         ViewBag.Model = _indexViewModel;
         return View("~/Views/Base/Index.cshtml", _indexViewModel);
     }
@@ -171,6 +175,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     public virtual async Task<ViewResult> Create(CancellationToken ct)
     {
         await Configure("create", ct);
+        CreateViewModel.Properties = typeof(TDto).GetProperties();
+        CreateViewModel.Options = Options;
         return View("~/Views/Base/Create.cshtml", CreateViewModel);
     }
 
@@ -182,14 +188,17 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
             .TableNoTracking
             .Where(i => i.Id.Equals(id))
             .AsQueryable();
-        
+
         if (_includes.Count != 0)
         {
             query = _includes.Aggregate(query, (current, item) => current.Include(item).AsQueryable());
         }
+
         Model = await query.FirstOrDefaultAsync(ct);
         await Configure("edit", ct);
         EditViewModel.Fields = CreateViewModel.Fields;
+        EditViewModel.Properties = typeof(TDto).GetProperties();
+        EditViewModel.Options = Options;
         var dto = mapper.Map<TDto>(Model);
         if (dto is null)
             return NotFound();
@@ -204,6 +213,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         var model = dto.ToEntity(mapper);
         if (!ModelState.IsValid)
         {
+            CreateViewModel.Properties = typeof(TDto).GetProperties();
+            CreateViewModel.Options = Options;
             CreateViewModel.Error = true;
             return View("~/Views/Base/Create.cshtml", CreateViewModel);
         }
@@ -220,7 +231,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         if (model is null)
             return NotFound();
         model = dto.ToEntity(model, mapper);
-        EditViewModel.Fields = CreateViewModel.Fields;
+        EditViewModel.Properties = typeof(TDto).GetProperties();
+        EditViewModel.Options = Options;
         EditViewModel.Error = false;
         ViewBag.Model = EditViewModel;
         if (!ModelState.IsValid)
@@ -237,7 +249,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     [HasPermission]
     public virtual async Task<IActionResult> Delete(TKey id, CancellationToken ct)
     {
-        var model = await repository.GetByIdAsync(ct,id);
+        var model = await repository.GetByIdAsync(ct, id);
         if (model is null)
             return NotFound();
         await repository.DeleteAsync(model, ct);

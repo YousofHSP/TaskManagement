@@ -1,7 +1,11 @@
+@using System.Reflection
+@using Presentation.Attributes
 @model DTO.IBaseDto
 
 @{
     var model = ViewBag.Model;
+    var options = ViewBag.Model.Options as  Dictionary<string, List<SelectListItem>>;
+    var properties = model.Properties as PropertyInfo[];
     ViewData["Title"] = "ویرایش " + model.Title;
 }
 <div class="card">
@@ -18,6 +22,57 @@
             }
             <input type="hidden" name="Id" value="@modelId">
             <div class="row">
+
+                @foreach (var property in properties)
+                {
+                    var field = property.GetCustomAttribute<FieldAttribute>();
+                    if(field is null)
+                        continue;
+                    field.SetLabelFromProperty(property);
+                    if (field.Value == "")
+                    {
+                        field.Value = Model.GetType().GetProperty(property.Name)?.GetValue(Model)?.ToString() ?? "";
+                    }
+
+                    <div class="col-md-6">
+                        <div class="@(field.Type == FieldType.Checkbox ? "form-check" : "form-group")">
+                            <label class="@(field.Type == FieldType.Checkbox ? "from-check-label" : "form-label")"
+                                   for="@property.Name">@field.Label</label>
+                            @switch (field.Type)
+                            {
+                                case FieldType.Text:
+                                    <input class="form-control" type="text" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                case FieldType.Select:
+                                    <select class="form-control select2" name="@property.Name" asp-items="@options[property.Name]">
+                                    </select>
+                                    break;
+                                case FieldType.Time:
+                                    <input class="form-control" type="time" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                case FieldType.DateTime:
+                                    <input class="form-control date-picker" type="text" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                case FieldType.MultiSelect:
+                                    <select class="form-control select2" multiple name="@(property.Name)[]"
+                                            asp-items="@options[property.Name]"> </select>
+                                    break;
+                                case FieldType.Number:
+                                    <input class="form-control" type="number" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                case FieldType.Checkbox:
+                                    <input class="form-check-input" type="checkbox" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                case FieldType.Radio:
+                                    <input class="form-control" type="radio" name="@property.Name" value="@field.Value"/>
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        </div>
+                    </div>
+                }
+
                 @foreach (var field in model.Fields)
                 {
                     if (field.Value == "")

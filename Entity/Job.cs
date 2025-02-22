@@ -12,8 +12,7 @@ public class Job:BaseEntity
     public int UserId { get; set; }
     public int CustomerId { get; set; }
     public int? ParentId { get; set; }
-    public int PlanId { get; set; }
-    public string Description { get; set; } = "";
+    public string? Description { get; set; } = "";
     public int EventId { get; set; }
     public DateTime? StartDateTime { get; set; }
     public DateTime? EndDateTime { get; set; }
@@ -24,7 +23,6 @@ public class Job:BaseEntity
     public User User { get; set; } = null!;
     public Customer Customer { get; set; } = null!;
     public Event Event { get; set; } = null!;
-    public Plan Plan { get; set; }
 }
 
 public enum JobStatus
@@ -47,8 +45,5 @@ public class JobConfiguration : IEntityTypeConfiguration<Job>
         builder.HasOne(j => j.Customer)
             .WithMany(c => c.Jobs)
             .HasForeignKey(j => j.CustomerId);
-        builder.HasOne(j => j.Plan)
-            .WithMany(p => p.Jobs)
-            .HasForeignKey(j => j.PlanId);
     }
 }

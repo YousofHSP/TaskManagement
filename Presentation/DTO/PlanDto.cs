@@ -2,16 +2,21 @@ using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using DTO;
 using Entity;
+using Presentation.Attributes;
+using Presentation.Models;
 
 namespace Presentation.DTO;
 
 public class PlanDto: BaseDto<PlanDto, Plan>
 {
     [Display(Name = "عنوان")]
+    [Field(FieldType.Text)]
     public string Title { get; set; }
     [Display(Name = "زمان شروع")]
+    [Field(FieldType.DateTime)]
     public string StartTime { get; set; }
     [Display(Name = "زمان پایان")]
+    [Field(FieldType.DateTime)]
     public string EndTime { get; set; }
 }
 

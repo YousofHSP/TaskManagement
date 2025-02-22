@@ -1,49 +1,61 @@
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Presentation.Attributes
 @model CreateViewModel
 @{
     ViewData["Title"] = "ایجاد " + Model.Title;
+
+    var properties = Model.Properties;
 }
 
 <div class="card">
     <div class="card-body">
         @if (Model.Error)
         {
-        <div class="alert alert-danger">
-            @Html.ValidationSummary()
-        </div>
+            <div class="alert alert-danger">
+                @Html.ValidationSummary()
+            </div>
         }
         <form asp-action="Create" method="post">
             <div class="row">
-                @foreach (var field in Model.Fields)
+                @foreach (var property in properties)
                 {
-                <div class="col-md-6">
+                    var field = property.GetCustomAttribute<FieldAttribute>();
+                    if(field is null)
+                        continue;
+                    field.SetLabelFromProperty(property);
+
+                    <div class="col-md-6">
                         <div class="@(field.Type == FieldType.Checkbox ? "form-check" : "form-group")">
-                            <label class="@(field.Type == FieldType.Checkbox ? "from-check-label" : "form-label")" for="@field.Name">@field.Label</label>
+                            <label class="@(field.Type == FieldType.Checkbox ? "from-check-label" : "form-label")"
+                                   for="@property.Name">@field.Label</label>
                             @switch (field.Type)
                             {
                                 case FieldType.Text:
-                                    <input class="form-control" type="text" name="@field.Name"/>
+                                    <input class="form-control" type="text" name="@property.Name"/>
                                     break;
                                 case FieldType.Select:
-                                    <select class="form-control select2" name="@field.Name" asp-items="@field.Items">
+                                    <select class="form-control select2" name="@property.Name" asp-items="@Model.Options[property.Name]">
                                     </select>
                                     break;
                                 case FieldType.Time:
-                                    <input class="form-control" type="time" name="@field.Name"/>
+                                    <input class="form-control" type="time" name="@property.Name"/>
                                     break;
                                 case FieldType.DateTime:
-                                    <input class="form-control date-picker" type="text" name="@field.Name"/>
+                                    <input class="form-control date-picker" type="text" name="@property.Name"/>
                                     break;
                                 case FieldType.MultiSelect:
-                                    <select class="form-control select2" multiple name="@(field.Name)[]" asp-items="@field.Items"> </select>
+                                    <select class="form-control select2" multiple name="@(property.Name)[]"
+                                            asp-items="@field.Options"> </select>
                                     break;
                                 case FieldType.Number:
-                                    <input class="form-control" type="number" name="@field.Name"/>
+                                    <input class="form-control" type="number" name="@property.Name"/>
                                     break;
                                 case FieldType.Checkbox:
-                                    <input class="form-check-input" type="checkbox" name="@field.Name"/>
+                                    <input class="form-check-input" type="checkbox" name="@property.Name"/>
                                     break;
                                 case FieldType.Radio:
-                                    <input class="form-control" type="radio" name="@field.Name"/>
+                                    <input class="form-control" type="radio" name="@property.Name"/>
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException();
@@ -51,7 +63,7 @@
                         </div>
                     </div>
                 }
-                
+
             </div>
             <button type="submit" class="btn btn-primary">ثبت</button>
         </form>

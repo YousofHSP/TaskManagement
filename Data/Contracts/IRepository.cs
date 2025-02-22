@@ -31,6 +31,6 @@ namespace Data.Contracts
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true);
         void UpdateRange(IEnumerable<TEntity> entities, bool saveNow = true);
         Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken, bool saveNow = true);
-        Task<List<SelectListItem>> GetSelectListItems(string text = "Title", string value = "Id",Expression<Func<TEntity, bool>>? whereFunc = null,  CancellationToken ct = default);
+        Task<List<SelectListItem>> GetSelectListItems(string text = "Title", string value = "Id",Expression<Func<TEntity, bool>>? whereFunc = null,string[]? selected = null,bool hasDefault = true ,CancellationToken ct = default);
     }
 }

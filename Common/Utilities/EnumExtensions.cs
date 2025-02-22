@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Common.Utilities
 {
@@ -42,6 +43,11 @@ namespace Common.Utilities
         public static Dictionary<int, string> ToDictionary(this Enum value)
         {
             return Enum.GetValues(value.GetType()).Cast<Enum>().ToDictionary(p => Convert.ToInt32(p), q => ToDisplay(q));
+        }
+
+        public static List<SelectListItem> ToSelectList(this Enum val)
+        {
+            return new List<SelectListItem>();
         }
 
         public enum DisplayProperty

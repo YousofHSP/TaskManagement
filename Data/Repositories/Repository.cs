@@ -99,6 +99,8 @@ namespace Data.Reprositories
             string text = "Title",
             string value = "Id",
             Expression<Func<TEntity, bool>>? whereFunc = null,
+            string[]? selected = null,
+            bool hasDefault = true,
             CancellationToken ct = default
         )
         {
@@ -106,11 +108,20 @@ namespace Data.Reprositories
             if (whereFunc is not null)
                 query = query.Where(whereFunc);
             var list = await query.ToListAsync(ct);
-            return list.Select(entity => new SelectListItem
+            List<SelectListItem> result = [];
+            if(hasDefault)
+                result.Add(new("انتخاب کنید", ""));
+            result.AddRange(list.Select(entity =>
             {
-                Text = entity.GetType().GetProperty(text)?.GetValue(entity)?.ToString() ?? "N/A",
-                Value = entity.GetType().GetProperty(value)?.GetValue(entity)?.ToString() ?? "0"
-            }).ToList();
+                var itemValue = entity.GetType().GetProperty(value)?.GetValue(entity)?.ToString() ?? "0";
+                return new SelectListItem
+                {
+                    Text = entity.GetType().GetProperty(text)?.GetValue(entity)?.ToString() ?? "",
+                    Value = itemValue,
+                    Selected = selected?.Contains(itemValue) ?? false
+                };
+            }).ToList());
+            return result;
         }
 
         public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken, bool saveNow = true)

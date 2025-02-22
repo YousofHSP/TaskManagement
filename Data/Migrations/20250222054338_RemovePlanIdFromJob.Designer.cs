@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250222054338_RemovePlanIdFromJob")]
+    partial class RemovePlanIdFromJob
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,6 +74,9 @@ namespace Data.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -78,6 +84,8 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("PlanId");
 
                     b.ToTable("Customers");
                 });
@@ -120,6 +128,7 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDateTime")
@@ -129,6 +138,9 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PlanId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("StartDateTime")
@@ -151,6 +163,8 @@ namespace Data.Migrations
                     b.HasIndex("EventId");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("PlanId");
 
                     b.HasIndex("UserId");
 
@@ -457,7 +471,15 @@ namespace Data.Migrations
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
 
+                    b.HasOne("Entity.Plan", "Plan")
+                        .WithMany("Customers")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Parent");
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("Entity.Job", b =>
@@ -477,6 +499,10 @@ namespace Data.Migrations
                     b.HasOne("Entity.Job", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
+
+                    b.HasOne("Entity.Plan", null)
+                        .WithMany("Jobs")
+                        .HasForeignKey("PlanId");
 
                     b.HasOne("Entity.User", "User")
                         .WithMany("OwnedJobs")
@@ -571,6 +597,13 @@ namespace Data.Migrations
             modelBuilder.Entity("Entity.Job", b =>
                 {
                     b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("Entity.Plan", b =>
+                {
+                    b.Navigation("Customers");
+
+                    b.Navigation("Jobs");
                 });
 
             modelBuilder.Entity("Entity.Ticket", b =>

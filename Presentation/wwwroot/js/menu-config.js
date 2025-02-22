@@ -1,5 +1,7 @@
 ﻿const menuSections = {
-    "General": ["user", "role", "job", "customer", "event", "plan"]
+    "Home": ["home"],
+    "Job": ["job", "jobreport"],
+    "BaseInfo": ["user", "role", "customer", "event", "plan"],
 };
 const initActiveMenu = () => {
     // === following js will activate the menu in left side bar based on url ====
@@ -10,34 +12,39 @@ const initActiveMenu = () => {
     const finalControllerPageUrl = pageControllerUrl.split("?")[0]
     const queryStrings = new URLSearchParams(window.location.search)
     
-    // if (menuSections["General"].includes(finalControllerPageUrl.toLowerCase())) {
-        // $("#MainHome").addClass("active");
-        // sectionSelectedClass = "config-active-menu-home"
-    // }
+    if (menuSections["Home"].includes(finalControllerPageUrl.toLowerCase())) {
+        $("#MainHome").addClass("active");
+        sectionSelectedClass = "config-active-menu-home"
+    }
+    if (menuSections["BaseInfo"].includes(finalControllerPageUrl.toLowerCase())) {
+        $("#MainBaseInfo").addClass("active");
+        sectionSelectedClass = "config-active-menu-baseInfo"
+    }
+    if (menuSections["Job"].includes(finalControllerPageUrl.toLowerCase())) {
+        $("#MainJob").addClass("active");
+        sectionSelectedClass = "config-active-menu-job"
+    }
 
-    $(`.menu-item`).each(function () {
+    $(`.${sectionSelectedClass} .menu-item`).each(function () {
         
         const mainPageHref = this.href.split("/");
-        const pageControllerHref = mainPageHref[3]
-        const pageActionsHref = mainPageHref[4]
+        const aController = mainPageHref[3]
+        const aMethod = mainPageHref[4] ?? ""
+
+        console.log(aMethod, pageActionUrl)
         
-        // const parentId = $(this).data("parentId")
-        // const sectionId = $(this).data("sectionId")
-        
-        if (finalPageHref === finalPageUrl || (otherController !== undefined && otherController.includes(finalControllerPageUrl))) {
-            
+        if (aController === finalControllerPageUrl && (aMethod === pageActionUrl || ((aMethod === "") && ["Create", "Edit"].includes(pageActionUrl)))) {
             $(this).addClass("active");
+            let secondLevel = $(this).parents(".nav-second-level");
+            if(secondLevel.length > 0){
+                secondLevel = secondLevel[0]
+                $(secondLevel).parent().children("a").addClass("active");
+            }
             $(this).parent().parent().addClass("active mm-show");
             $(this).parent().parent().parent().addClass("active");
+            $(`.${sectionSelectedClass}`).parent().addClass('active')
             // $(`#${sectionId}`).addClass("active")
             // $(`#${parentId}`).addClass("active")
-            // $(this).parent().parent().addClass("in");
-            // $(this).parent().parent().addClass("show");
-            // $(this).parent().parent().prev().addClass("show");
-            // $(this).parent().parent().parent().addClass("show");
-            // $(this).parent().parent().parent().parent().addClass("show");
-            // $(this).parent().parent().parent().parent().parent().addClass("show");
-            // $(this).parent().parent().parent().parent().parent().parent().addClass("show");
         }
     });
 }

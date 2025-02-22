@@ -12,7 +12,7 @@ public class UserDto : BaseDto<UserDto, User>
     [Required(ErrorMessage = "نام و نام خانوادگی اجباری است")]
     [MaxLength(255)]
     [Display(Name = "نام و نام خانوادگی")]
-    [Field(FieldType.Text)]
+    [Field(FieldType.Text )]
     public string FullName { get; set; }
 
     [Required(ErrorMessage = "شماره موبایل اجباری است")]

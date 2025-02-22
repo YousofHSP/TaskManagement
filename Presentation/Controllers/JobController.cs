@@ -2,6 +2,7 @@ using System.Globalization;
 using AutoMapper;
 using Common.Utilities;
 using Data.Contracts;
+using DTO;
 using Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -24,96 +25,78 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes("Customer", "User", "Parent", "Event", "Plan");
+        SetIncludes("Customer", "User", "Parent", "Event");
 
-        var usersQ = userRepository.TableNoTracking
-            .Where(i => i.Id != 1)
-            .AsQueryable();
+        List<SelectListItem> users;
+        var selectedParentId = Model?.ParentId.ToString() ?? "";
+        var selectedUserId = Model?.UserId.ToString() ?? "";
+        var selectedCustomerId = Model?.CustomerId.ToString() ?? "";
+        var selectedEventId = Model?.EventId.ToString() ?? "";
+        var selectedStatus = Model?.Status.ToString() ?? "";
+
         if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
         {
             AddCondition(i => i.UserId == User.Identity!.GetUserId<int>());
-            usersQ = usersQ.Where(i => i.Id == User.Identity!.GetUserId<int>());
+            users = await userRepository.GetSelectListItems(
+                nameof(UserDto.FullName),
+                hasDefault: false,
+                selected: [selectedUserId],
+                whereFunc: i => i.Id != 1 && i.Id == User.Identity!.GetUserId<int>(),
+                ct: ct
+            );
         }
-        var users = await usersQ.ToListAsync(ct);
-        var customers = await customerRepository.TableNoTracking.ToListAsync(ct);
-        var events = await eventRepository.TableNoTracking.ToListAsync(ct);
-        var plans = await planRepository.TableNoTracking.ToListAsync(ct);
+        else
+        {
+            users = await userRepository.GetSelectListItems(
+                nameof(UserDto.FullName),
+                whereFunc: i => i.Id != 1,
+                hasDefault: false,
+                selected: [selectedUserId],
+                ct: ct
+            );
+        }
+
+        var customers = await customerRepository.GetSelectListItems(hasDefault: false,selected: [selectedCustomerId], ct: ct);
+        var events = await eventRepository.GetSelectListItems(hasDefault: false, selected: [selectedEventId],ct: ct);
         var jobStatus = new List<SelectListItem>
         {
-            new SelectListItem(JobStatus.Todo.ToDisplay(), JobStatus.Todo.ToString()),
-            new SelectListItem(JobStatus.InProgress.ToDisplay(), JobStatus.InProgress.ToString()),
-            new SelectListItem(JobStatus.Done.ToDisplay(), JobStatus.Done.ToString()),
+            new(JobStatus.Todo.ToDisplay(), JobStatus.Todo.ToString(), JobStatus.Todo.ToString() == selectedStatus),
+            new(JobStatus.InProgress.ToDisplay(), JobStatus.InProgress.ToString(), JobStatus.InProgress.ToString() == selectedStatus),
+            new(JobStatus.Done.ToDisplay(), JobStatus.Done.ToString(), JobStatus.Done.ToString() == selectedStatus)
         };
-        var parentsQuery = repository.TableNoTracking.AsQueryable();
+        List<SelectListItem> parents;
         if (Model is not null)
-            parentsQuery = parentsQuery.Where(i => i.Id != Model.Id);
+            parents = await repository.GetSelectListItems(whereFunc: i => i.Id != Model.Id, selected: [selectedParentId],ct: ct);
+        else
+            parents = await repository.GetSelectListItems(selected: [selectedParentId],ct: ct);
 
-        var parents = await parentsQuery.ToListAsync(ct);
-        AddField(nameof(JobDto.Title), ModelExtensions.ToDisplay<JobDto>(i => i.Title));
-        AddField(nameof(JobDto.UserId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.UserId),
-            FieldType.Select,
-            Model?.UserId.ToString() ?? "",
-            users.Select(i => new SelectListItem(i.FullName, i.Id.ToString())).ToList()
-        );
-        AddField(nameof(JobDto.CustomerId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.CustomerId),
-            FieldType.Select,
-            Model?.CustomerId.ToString() ?? "",
-            customers.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddField(nameof(JobDto.ParentId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.ParentId),
-            FieldType.Select,
-            Model?.ParentId?.ToString() ?? "",
-            parents.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddField(nameof(JobDto.EventId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.EventId),
-            FieldType.Select,
-            Model?.EventId.ToString() ?? "",
-            events.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddField(nameof(JobDto.PlanId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.PlanId),
-            FieldType.Select,
-            Model?.PlanId.ToString() ?? "",
-            plans.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddField(nameof(JobDto.StartedAt), ModelExtensions.ToDisplay<JobDto>(i => i.StartedAt), FieldType.DateTime);
-        AddField(nameof(JobDto.EndedAt), ModelExtensions.ToDisplay<JobDto>(i => i.EndedAt), FieldType.DateTime);
-        AddField(nameof(JobDto.Status),
-            ModelExtensions.ToDisplay<JobDto>(i => i.Status),
-            FieldType.Select,
-            Model?.Status.ToString() ?? "",
-            jobStatus
-        );
-        AddField(nameof(JobDto.Description), ModelExtensions.ToDisplay<JobDto>(i => i.Description));
+        AddOptions(nameof(JobDto.UserId), users);
+        AddOptions(nameof(JobDto.CustomerId), customers);
+        AddOptions(nameof(JobDto.ParentId), parents);
+        AddOptions(nameof(JobDto.EventId), events);
+        AddOptions(nameof(JobDto.Status), jobStatus);
 
-        AddFilter(nameof(JobDto.UserId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.UserId),
-            FieldType.Select,
-            "",
-            users.Select(i => new SelectListItem(i.FullName, i.Id.ToString())).ToList()
-        );
-        AddFilter(nameof(JobDto.CustomerId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.CustomerId),
-            FieldType.Select,
-            "",
-            customers.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddFilter(nameof(JobDto.PlanId),
-            ModelExtensions.ToDisplay<JobDto>(i => i.PlanId),
-            FieldType.Select,
-            "",
-            plans.Select(i => new SelectListItem(i.Title, i.Id.ToString())).ToList()
-        );
-        AddSum("جمع ساعات", i =>
+        if (method == "index")
         {
-            if (i is { EndDateTime: not null, StartDateTime: not null })
-                return (i.EndDateTime.Value - i.StartDateTime.Value).TotalMinutes;
-            return 0;
-        }, SumTypeEnum.Time);
+            AddFilter(nameof(JobDto.UserId),
+                ModelExtensions.ToDisplay<JobDto>(i => i.UserId),
+                FieldType.Select,
+                "",
+                users
+            );
+            AddFilter(nameof(JobDto.CustomerId),
+                ModelExtensions.ToDisplay<JobDto>(i => i.CustomerId),
+                FieldType.Select,
+                "",
+                customers
+            );
+            AddSum("جمع ساعات", i =>
+            {
+                if (i is { EndDateTime: not null, StartDateTime: not null })
+                    return (i.EndDateTime.Value - i.StartDateTime.Value).TotalMinutes;
+                return 0;
+            }, SumTypeEnum.Time);
+        }
     }
 
     [HttpGet]
@@ -132,6 +115,7 @@ public class JobController(
             var startDateTime = dto.StartDateTime.ToGregorian();
             jobsQuery = jobsQuery.Where(i => i.StartDateTime <= startDateTime && i.EndDateTime >= startDateTime);
         }
+
         if (!string.IsNullOrEmpty(dto.EndDateTime))
         {
             var endDateTime = dto.EndDateTime.ToGregorian();
@@ -140,8 +124,8 @@ public class JobController(
 
         if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
             jobsQuery = jobsQuery.Where(i => i.UserId == User.Identity!.GetUserId<int>());
-        
-        var jobs = await jobsQuery.ToListAsync(ct);
+
+        var jobs = await jobsQuery.OrderDescending().ToListAsync(ct);
         var plans = await planRepository.TableNoTracking.ToListAsync(ct);
         var plansSums = new Dictionary<string, int>();
         foreach (var plan in plans)
@@ -157,7 +141,6 @@ public class JobController(
                 var jobEnd = (day == jobEndDate.Date) ? jobEndDate.TimeOfDay : new TimeSpan(23, 59, 59);
                 foreach (var plan in plans)
                 {
-
                     var overlapStart = jobStart > plan.StartTime ? jobStart : plan.StartTime;
                     var overlapEnd = jobEnd < plan.EndTime ? jobEnd : plan.EndTime;
 
