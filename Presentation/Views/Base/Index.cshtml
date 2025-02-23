@@ -1,12 +1,15 @@
 @using System.ComponentModel.DataAnnotations
 @using Common.Utilities
+@using Entity
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Presentation.DTO
 
 @{
     var model = ViewBag.Model;
     var selectedFilters = ViewBag.SelectedFilters as Dictionary<string, string>;
     var sums = ViewBag.Sums as Dictionary<string, string> ?? new();
     var filters = model.Filters as List<Field>;
+    var jsFiles = ViewBag.JsFiles as List<string> ?? [];
     ViewData["Title"] = "لیست " + Model.Title;
 }
 
@@ -120,11 +123,24 @@
 
                                     @foreach (var listAction in (model.ListActions as List<ListAction>)!)
                                     {
-                                        <a asp-action="@listAction.Url" asp-route-id="@row.Id" class="dropdown-item">
-                                            <i
-                                                class="@listAction.Class"></i>
-                                            @listAction.Title
-                                        </a>
+                                        if (string.IsNullOrEmpty(listAction.Url))
+                                        {
+                                            <a href="@listAction.RowUrl" data-id="@row.Id"
+                                               class="dropdown-item @listAction.AClass">
+                                                <i
+                                                    class="@listAction.Class"></i>
+                                                @listAction.Title
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="@listAction.Url" asp-route-id="@row.Id"
+                                               class="dropdown-item @listAction.AClass">
+                                                <i
+                                                    class="@listAction.Class"></i>
+                                                @listAction.Title
+                                            </a>
+                                        }
                                     }
                                 </div>
                             </div>
@@ -146,4 +162,13 @@
 
     </div>
 
+    <partial name="Components/ChangeModal"/>
 </div>
+
+@section Scripts{
+
+    @foreach (var js in jsFiles)
+    {
+        <script src="@js"></script>
+    }
+}

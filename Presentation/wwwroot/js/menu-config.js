@@ -14,18 +14,18 @@ const initActiveMenu = () => {
     
     if (menuSections["Home"].includes(finalControllerPageUrl.toLowerCase())) {
         $("#MainHome").addClass("active");
-        sectionSelectedClass = "config-active-menu-home"
+        sectionSelectedClass = ".config-active-menu-home"
     }
     if (menuSections["BaseInfo"].includes(finalControllerPageUrl.toLowerCase())) {
         $("#MainBaseInfo").addClass("active");
-        sectionSelectedClass = "config-active-menu-baseInfo"
+        sectionSelectedClass = ".config-active-menu-baseInfo"
     }
     if (menuSections["Job"].includes(finalControllerPageUrl.toLowerCase())) {
         $("#MainJob").addClass("active");
-        sectionSelectedClass = "config-active-menu-job"
+        sectionSelectedClass = ".config-active-menu-job"
     }
 
-    $(`.${sectionSelectedClass} .menu-item`).each(function () {
+    $(`${sectionSelectedClass} .menu-item`).each(function () {
         
         const mainPageHref = this.href.split("/");
         const aController = mainPageHref[3]

@@ -13,10 +13,10 @@ public class PlanDto: BaseDto<PlanDto, Plan>
     [Field(FieldType.Text)]
     public string Title { get; set; }
     [Display(Name = "زمان شروع")]
-    [Field(FieldType.DateTime)]
+    [Field(FieldType.Time)]
     public string StartTime { get; set; }
     [Display(Name = "زمان پایان")]
-    [Field(FieldType.DateTime)]
+    [Field(FieldType.Time)]
     public string EndTime { get; set; }
 }
 

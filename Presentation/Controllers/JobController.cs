@@ -1,5 +1,6 @@
 using System.Globalization;
 using AutoMapper;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using DTO;
@@ -25,7 +26,9 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes("Customer", "User", "Parent", "Event");
+        SetIncludes(nameof(Job.Customer), nameof(Job.User), nameof(Job.Parent), nameof(Job.Event));
+        AddJsFile("/js/components/changeModal.js", "index");
+        AddListAction("تغییر", "fa fa-arrow-circle-left", "", "open-modal");
 
         List<SelectListItem> users;
         var selectedParentId = Model?.ParentId.ToString() ?? "";
@@ -156,5 +159,29 @@ public class JobController(
         dto.Jobs = jobResDtos;
         dto.PlansSum = plansSums.ToDictionary(i => i.Key, v => $"{(v.Value / 60):D2}:{(v.Value % 60):D2}");
         return View(dto);
+    }
+
+    [HttpGet]
+    public async Task<JobDto> GetInfo(int id, CancellationToken ct)
+    {
+        var model = await repository.TableNoTracking.Where(i => i.Id == id).FirstOrDefaultAsync(ct);
+        if (model is null)
+            throw new NotFoundException("تسک پیدا نشد");
+        var dto = mapper.Map<JobDto>(model);
+        dto.StartedAt = model.StartDateTime?.ToShamsi() ?? "";
+        dto.EndedAt = model.EndDateTime?.ToShamsi() ?? "";
+        return dto;
+    }
+
+    public async Task<IActionResult> QuickUpdate(JobQuickUpdateDto dto, CancellationToken ct)
+    {
+        var model = await repository.GetByIdAsync(ct, dto.Id);
+        if (model is null)
+            throw new NotFoundException("تسک پیدا نشد");
+        model.Status = dto.Status;
+        model.StartDateTime = dto.StartedAt.ToGregorian();
+        model.EndDateTime = dto.EndedAt.ToGregorian();
+        await repository.UpdateAsync(model, ct);
+        return Ok();
     }
 }

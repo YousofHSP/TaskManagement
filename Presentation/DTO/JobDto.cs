@@ -130,3 +130,11 @@ public class JobReportViewModel
     public List<JobResDto> Jobs { get; set; }
     public Dictionary<string, string> PlansSum { get; set; }
 }
+
+public class JobQuickUpdateDto: BaseDto<JobQuickUpdateDto, Job>
+{
+    public JobStatus Status { get; set; }
+    public string StartedAt { get; set; }
+    public string EndedAt { get; set; }
+    
+}

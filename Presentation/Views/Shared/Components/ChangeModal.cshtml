@@ -1,0 +1,45 @@
+@using Common.Utilities
+@using Entity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Presentation.DTO
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">تغییر</h1>
+                <button type="button" class="btn-close ml-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-6 form-group">
+                        <label class="form-label">تاریخ شروع</label>
+                        <input class="form-control date-picker" type="text" autocomplete="off" name="@(nameof(JobDto.StartedAt))"/>
+                    </div>
+                    <div class="col-6 form-group">
+                        <label class="form-label">تاریخ پایان</label>
+                        <input class="form-control date-picker" type="text" autocomplete="off" name="@(nameof(JobDto.EndedAt))"/>
+
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-6 form-group">
+                        <label for="" class="form-label">وضعیت</label>
+                        <select name="@(nameof(JobDto.Status))" class="form-control select2">
+                            <option value="@((int)JobStatus.Todo)">@JobStatus.Todo.ToDisplay()</option>
+                            <option value="@((int)JobStatus.InProgress)">@JobStatus.InProgress.ToDisplay()</option>
+                            <option value="@((int)JobStatus.Done)">@JobStatus.Done.ToDisplay()</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary save">ذخیره</button>
+            </div>
+        </div>
+    </div>
+</div>

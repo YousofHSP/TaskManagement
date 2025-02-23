@@ -14,7 +14,7 @@ public class CustomerController(IRepository<Customer> repository, IMapper mapper
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes("Parent", "Plan");
+        SetIncludes(nameof(Customer.Parent));
 
         if (method is "create" or "edit")
         {

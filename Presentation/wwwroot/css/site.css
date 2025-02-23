@@ -86,3 +86,6 @@ a {
 .left-sidenav .main-icon-menu {
     background-color: #1a233a;
 }
+.select2-container{
+    z-index: 9999;
+}

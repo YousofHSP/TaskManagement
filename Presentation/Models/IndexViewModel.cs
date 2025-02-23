@@ -12,7 +12,9 @@ public class ListAction
 {
     public string Title { get; set; }
     public string Class { get; set; }
+    public string AClass { get; set; } = "";
     public string Url { get; set; }
+    public string RowUrl { get; set; }
 }
 
 public class IndexViewModel<TModel>

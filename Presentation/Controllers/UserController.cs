@@ -27,7 +27,7 @@ public class UserController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes("Roles");
+        SetIncludes(nameof(Entity.User.Roles));
 
         var selectedRole = "";
         if (method is "edit" or "update" && Model is not null)

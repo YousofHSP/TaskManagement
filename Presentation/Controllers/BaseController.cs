@@ -35,8 +35,16 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     private List<string> _includes = [];
     private List<Expression<Func<TEntity, bool>>> _conditions = [];
     private List<SumType<TEntity>> Sums = new();
+    private Dictionary<string, List<string>?> JsFiles = [];
     protected TEntity? Model { get; private set; }
 
+    protected void AddJsFile(string src, string place = "")
+    {
+        if (!JsFiles.ContainsKey(place))
+            JsFiles.Add(place, []);
+        JsFiles[place].Add(src);
+        
+    }
     protected void SetIncludes(params List<string> includes)
     {
         _includes = includes;
@@ -47,9 +55,9 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         Options.Add(name, options);
     }
 
-    protected void AddListAction(string title, string cls, string url)
+    protected void AddListAction(string title, string cls, string url, string aClass = "", string rowUrl = "#")
     {
-        _indexViewModel.ListActions.Add(new() { Class = cls, Title = title, Url = url });
+        _indexViewModel.ListActions.Add(new() { Class = cls, Title = title, Url = url , AClass = aClass, RowUrl = rowUrl });
     }
 
     protected void AddCondition(Expression<Func<TEntity, bool>> condition)
@@ -148,6 +156,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         var res = mapper.Map<List<TResDto>>(queryRes);
         _indexViewModel.Rows = res;
         _indexViewModel.Columns = Columns;
+        JsFiles.TryGetValue("index", out var jsFiles);
+        ViewBag.JsFiles = jsFiles ?? [];
         ViewBag.SelectedFilters = model.Filters;
         var sumItems = new Dictionary<string, string>();
         foreach (var sum in Sums)
