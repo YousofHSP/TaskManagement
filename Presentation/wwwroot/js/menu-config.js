@@ -31,7 +31,6 @@ const initActiveMenu = () => {
         const aController = mainPageHref[3]
         const aMethod = mainPageHref[4] ?? ""
 
-        console.log(aMethod, pageActionUrl)
         
         if (aController === finalControllerPageUrl && (aMethod === pageActionUrl || ((aMethod === "") && ["Create", "Edit"].includes(pageActionUrl)))) {
             $(this).addClass("active");
@@ -41,8 +40,7 @@ const initActiveMenu = () => {
                 $(secondLevel).parent().children("a").addClass("active");
             }
             $(this).parent().parent().addClass("active mm-show");
-            $(this).parent().parent().parent().addClass("active");
-            $(`.${sectionSelectedClass}`).parent().addClass('active')
+            $(this).parents(".main-icon-menu-pane").addClass("active")
             // $(`#${sectionId}`).addClass("active")
             // $(`#${parentId}`).addClass("active")
         }

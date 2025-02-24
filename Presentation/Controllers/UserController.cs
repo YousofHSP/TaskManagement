@@ -48,6 +48,8 @@ public class UserController(
     public override async Task<IActionResult> Create(UserDto dto, CancellationToken ct)
     {
         await Configure("create", ct);
+        CreateViewModel.Properties = typeof(UserDto).GetProperties();
+        CreateViewModel.Options = Options;
         if (string.IsNullOrEmpty(dto.Password))
         {
             CreateViewModel.Error = true;
@@ -71,7 +73,15 @@ public class UserController(
 
         var model = dto.ToEntity(mapper);
         model.UserName = model.PhoneNumber;
-        await userManager.CreateAsync(model);
+        var result = await userManager.CreateAsync(model);
+        if (!result.Succeeded)
+        {
+            CreateViewModel.Error = true;
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+            return View("~/Views/Base/Create.cshtml", CreateViewModel);
+            
+        }
         await userManager.AddToRoleAsync(model, dto.RoleName);
         await userManager.AddPasswordAsync(model, dto.Password);
         return RedirectToAction(nameof(Index));
