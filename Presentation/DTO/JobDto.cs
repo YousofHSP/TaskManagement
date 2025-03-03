@@ -27,16 +27,11 @@ public class JobDto:BaseDto<JobDto, Job>
     [Field(FieldType.Select)]
     public int CustomerId { get; set; }
     
-    [Display(Name = "والد")]
-    [Field(FieldType.Select)]
-    public int? ParentId { get; set; }
-    
-    
-    [Display(Name = "رویداد")]
+    [Display(Name = "فعالیت")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
     [Field(FieldType.Select)]
-    public int EventId { get; set; }
     
+    public int EventId { get; set; }
     [Display(Name = "تاریخ شروع")]
     [Field(FieldType.DateTime)]
     public string? StartedAt { get; set; }
@@ -45,6 +40,7 @@ public class JobDto:BaseDto<JobDto, Job>
     [Field(FieldType.DateTime)]
     public string? EndedAt { get; set; }
 
+    
     [Display(Name = "وضعیت")]
     [Field(FieldType.Select)]
     public JobStatus Status { get; set; }
@@ -87,9 +83,7 @@ public class JobResDto: BaseDto<JobResDto, Job>
     public string UserFullName { get; set; }
     [Display(Name = "مشتری")]
     public string CustomerTitle { get; set; }
-    [Display(Name = "والد")]
-    public string ParentTitle { get; set; }
-    [Display(Name = "رویداد")]
+    [Display(Name = "فعالیت")]
     public string EventTitle { get; set; }
     [Display(Name = "توضیحات")]
     public string Description { get; set; }

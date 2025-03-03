@@ -6,11 +6,22 @@ public static class CheckPermission
 {
     
 
-    public static bool Check(ClaimsPrincipal user, string permission)
+    public static bool Check(ClaimsPrincipal user, string[] permissions, bool checkAll = false)
     {
 
         if (user.IsInRole("Admin"))
             return true;
-        return user.Claims.Any(c => c.Type == "Permission" && c.Value == permission);
+        var userPermissions = user.Claims
+            .Where(c => c.Type == "Permission")
+            .Select(i => i.Value)
+            .ToHashSet();
+        return checkAll
+            ? permissions.All(p => userPermissions.Contains(p))
+            : permissions.Any(p => userPermissions.Contains(p));
+    }
+
+    public static bool Check(ClaimsPrincipal user, string permission)
+    {
+        return Check(user, [permission], true);
     }
 }

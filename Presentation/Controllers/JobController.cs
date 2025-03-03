@@ -31,12 +31,12 @@ public class JobController(
         AddListAction("تغییر", "fa fa-arrow-circle-left", "", "open-modal");
 
         List<SelectListItem> users;
-        var selectedParentId = Model?.ParentId.ToString() ?? "";
         var selectedUserId = Model?.UserId.ToString() ?? "";
         var selectedCustomerId = Model?.CustomerId.ToString() ?? "";
         var selectedEventId = Model?.EventId.ToString() ?? "";
         var selectedStatus = Model?.Status.ToString() ?? "";
 
+        AddCondition(i => i.ParentId == null);
         if (!CheckPermission.Check(User, "Job.ShowAllInfo"))
         {
             AddCondition(i => i.UserId == User.Identity!.GetUserId<int>());
@@ -67,15 +67,9 @@ public class JobController(
             new(JobStatus.InProgress.ToDisplay(), JobStatus.InProgress.ToString(), JobStatus.InProgress.ToString() == selectedStatus),
             new(JobStatus.Done.ToDisplay(), JobStatus.Done.ToString(), JobStatus.Done.ToString() == selectedStatus)
         };
-        List<SelectListItem> parents;
-        if (Model is not null)
-            parents = await repository.GetSelectListItems(whereFunc: i => i.Id != Model.Id, selected: [selectedParentId],ct: ct);
-        else
-            parents = await repository.GetSelectListItems(selected: [selectedParentId],ct: ct);
 
         AddOptions(nameof(JobDto.UserId), users);
         AddOptions(nameof(JobDto.CustomerId), customers);
-        AddOptions(nameof(JobDto.ParentId), parents);
         AddOptions(nameof(JobDto.EventId), events);
         AddOptions(nameof(JobDto.Status), jobStatus);
 

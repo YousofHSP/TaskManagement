@@ -5,12 +5,18 @@
         <a href="#Home" class="nav-link" id="MainHome">
             <i class="fa fa-home"></i>
         </a>
-        <a href="#Job" class="nav-link" id="MainJob">
-            <i class="fa fa-tasks"></i>
-        </a>
-        <a href="#BaseInfo" class="nav-link" id="MainBaseInfo">
-            <i class="fa fa-info-circle"></i>
-        </a>
+        @if (CheckPermission.Check(User, ["Job.Index", "Job.Report", "Event.Index", "Plan.Index"]))
+        {
+            <a href="#Job" class="nav-link" id="MainJob">
+                <i class="fa fa-tasks"></i>
+            </a>
+        }
+        @if (CheckPermission.Check(User, ["User.Index", "Role.Index", "Customer.Index", "Project.Index"]))
+        {
+            <a href="#BaseInfo" class="nav-link" id="MainBaseInfo">
+                <i class="fa fa-info-circle"></i>
+            </a>
+        }
     </nav>
 </div>
 <div class="main-menu-inner">
@@ -21,7 +27,8 @@
             </div>
             <ul class="nav config-active-menu-home">
                 <li class="nav-item">
-                    <a class="nav-link menu-item" asp-action="Index" asp-controller="Home"><i class="dripicons-meter"></i>داشبورد</a>
+                    <a class="nav-link menu-item" asp-action="Index" asp-controller="Home"><i
+                            class="dripicons-meter"></i>داشبورد</a>
                 </li>
             </ul>
 
@@ -30,76 +37,138 @@
             <div class="title-box">
                 <h6 class="menu-title">اطلاعات پایه</h6>
             </div>
+
             <ul class="nav metismenu config-active-menu-baseInfo">
+                @if (CheckPermission.Check(User, ["User.Index", "Role.Index"]))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" aria-expanded="true">
+                            <i class="dripicons-user-group"></i>
+                            <span class="w-100">ناحیه کاربری</span>
+                            <span class="menu-arrow">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            @if (CheckPermission.Check(User, "User.Index"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Index" asp-controller="User">کاربر</a>
+                                </li>
+                            }
+
+                            @if (CheckPermission.Check(User, "Role.Index"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Index" asp-controller="Role">نقش</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+
+                @if (CheckPermission.Check(User, "Customer.Index"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" aria-expanded="true">
+                            <i class="dripicons-user-group"></i>
+                            <span class="w-100">مشتری</span>
+                            <span class="menu-arrow">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            @if (CheckPermission.Check(User, "Customer.Index"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Index" asp-controller="Customer">مشتری</a>
+                                </li>
+                            }
+
+                            @if (CheckPermission.Check(User, "Project.Index"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Index" asp-controller="Role">پروژه</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+
+            </ul>
+
+
+        </div>
+        <div class="main-icon-menu-pane" id="Job">
+            <div class="title-box">
+                <h6 class="menu-title">وظیفه</h6>
+            </div>
+            <ul class="nav metismenu config-active-menu-job">
+                @if (CheckPermission.Check(User, ["Job.Index"]))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" aria-expanded="true">
+                            <i class="mdi mdi-clipboard-text"></i>
+                            <span class="w-100">عملیات</span>
+                            <span class="menu-arrow">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            @if (CheckPermission.Check(User, "Job.Index"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Index" asp-controller="Job">وظیفه</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+
+
+                @if (CheckPermission.Check(User, ["Job.Report"]))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" aria-expanded="true">
+                            <i class="mdi mdi-file-chart"></i>
+                            <span class="w-100">گزارشات</span>
+                            <span class="menu-arrow">
+                                <i class="mdi mdi-chevron-right"></i>
+                            </span>
+                        </a>
+                        <ul class="nav-second-level" aria-expanded="false">
+                            @if (CheckPermission.Check(User, "Job.Report"))
+                            {
+                                <li>
+                                    <a class="menu-item" asp-action="Report" asp-controller="Job">گرازش وظایف</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
                 <li class="nav-item">
                     <a class="nav-link" href="#" aria-expanded="true">
-                        <i class="dripicons-user-group"></i>
-                        <span class="w-100">ناحیه کاربری</span>
+                        <i class="fa fa-info-circle"></i>
+                        <span class="w-100">اطلاعات پایه</span>
                         <span class="menu-arrow">
                             <i class="mdi mdi-chevron-right"></i>
                         </span>
                     </a>
                     <ul class="nav-second-level" aria-expanded="false">
-                        @if (CheckPermission.Check(User, "User.Index"))
+                        @if (CheckPermission.Check(User, "Event.Index"))
                         {
                             <li>
-                                <a class="menu-item" asp-action="Index" asp-controller="User">کاربر</a>
+                                <a class="menu-item" asp-action="Index" asp-controller="Event">فعالیت</a>
                             </li>
                         }
-
-                        @if (CheckPermission.Check(User, "Role.Index"))
+                        @if (CheckPermission.Check(User, "Plan.Index"))
                         {
                             <li>
-                                <a class="menu-item" asp-action="Index" asp-controller="Role">نقش</a>
+                                <a class="menu-item" asp-action="Index" asp-controller="Plan">پلن</a>
                             </li>
                         }
                     </ul>
                 </li>
-                @if (CheckPermission.Check(User, "Customer.Index"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link menu-item" asp-action="Index" asp-controller="Customer">
-                            <i
-                                class="dripicons-user-group"></i>مشتری</a>
-                    </li>
-                }
-
-                <!--end nav-item-->
-                @if (CheckPermission.Check(User, "Event.Index"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link menu-item" asp-action="Index" asp-controller="Event"><i class="dripicons-feed"></i>رویداد</a>
-                    </li>
-                }
-                @if (CheckPermission.Check(User, "Plan.Index"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link menu-item" asp-action="Index" asp-controller="Plan">
-                            <i
-                                class="dripicons-box"></i>پلن</a>
-                    </li>
-                }
-            </ul>
-
-        </div>
-        <div class="main-icon-menu-pane" id="Job">
-            <div class="title-box">
-                <h6 class="menu-title">تسک</h6>
-            </div>
-            <ul class="nav config-active-menu-job">
-                @if (CheckPermission.Check(User, "Job.Index"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link menu-item" asp-action="Index" asp-controller="Job"><i class="dripicons-tag"></i>تسک</a>
-                    </li>
-                }
-                @if (CheckPermission.Check(User, "Job.Report"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link menu-item" asp-action="Report" asp-controller="Job"><i class="dripicons-tags"></i>گزارش
-                            تسک</a>
-                    </li>
-                }
             </ul>
 
         </div>

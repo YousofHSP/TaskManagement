@@ -3,7 +3,7 @@ using Entity.Common;
 
 namespace Entity;
 
-[Display(Name = "رویداد")]
+[Display(Name = "فعالیت")]
 public class Event: BaseEntity
 {
 
