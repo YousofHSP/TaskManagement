@@ -1,7 +1,7 @@
 ﻿const menuSections = {
     "Home": ["home"],
     "Job": ["job", "jobreport", "event", "plan"],
-    "BaseInfo": ["user", "role", "customer"],
+    "BaseInfo": ["user", "role", "customer","project"],
 };
 const initActiveMenu = () => {
     // === following js will activate the menu in left side bar based on url ====

@@ -18,6 +18,7 @@ public class JobController(
     IRepository<Job> repository,
     IRepository<User> userRepository,
     IRepository<Customer> customerRepository,
+    IRepository<Project> projectRepository,
     IRepository<Event> eventRepository,
     IRepository<Plan> planRepository,
     IMapper mapper
@@ -26,13 +27,16 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes(nameof(Job.Customer), nameof(Job.User), nameof(Job.Parent), nameof(Job.Event));
+        SetIncludes(nameof(Job.Customer), nameof(Job.User), nameof(Job.Parent), nameof(Job.Event), nameof(Job.Project));
         AddJsFile("/js/components/changeModal.js", "index");
-        AddListAction("تغییر", "fa fa-arrow-circle-left", "", "open-modal");
+        AddJsFile("/js/components/getProjectsByCustomer.js", "create");
+        AddComponentFile("Components/SubTasks", "create");
+        AddListAction("ثبت گزارش", "fa fa-arrow-circle-left", "", "open-modal");
 
         List<SelectListItem> users;
         var selectedUserId = Model?.UserId.ToString() ?? "";
         var selectedCustomerId = Model?.CustomerId.ToString() ?? "";
+        var selectedProjectId = Model?.ProjectId.ToString() ?? "";
         var selectedEventId = Model?.EventId.ToString() ?? "";
         var selectedStatus = Model?.Status.ToString() ?? "";
 
@@ -59,7 +63,8 @@ public class JobController(
             );
         }
 
-        var customers = await customerRepository.GetSelectListItems(hasDefault: false,selected: [selectedCustomerId], ct: ct);
+        var projects = await projectRepository.GetSelectListItems(selected: [selectedProjectId],ct: ct);
+        var customers = await customerRepository.GetSelectListItems(selected: [selectedCustomerId], ct: ct);
         var events = await eventRepository.GetSelectListItems(hasDefault: false, selected: [selectedEventId],ct: ct);
         var jobStatus = new List<SelectListItem>
         {
@@ -70,6 +75,7 @@ public class JobController(
 
         AddOptions(nameof(JobDto.UserId), users);
         AddOptions(nameof(JobDto.CustomerId), customers);
+        AddOptions(nameof(JobDto.ProjectId), projects);
         AddOptions(nameof(JobDto.EventId), events);
         AddOptions(nameof(JobDto.Status), jobStatus);
 
@@ -177,5 +183,20 @@ public class JobController(
         model.EndDateTime = dto.EndedAt.ToGregorian();
         await repository.UpdateAsync(model, ct);
         return Ok();
+    }
+
+    public override async Task AfterCreate(JobDto dto, Job model, CancellationToken ct)
+    {
+        var subJobs = dto.SubJobs.Select(i => new Job
+        {
+            UserId = i.UserId,
+            Title = i.Title,
+            CreatedAt = DateTimeOffset.Now,
+            CustomerId = model.CustomerId,
+            ProjectId = model.ProjectId,
+            ParentId = model.Id,
+            EventId = i.EventId
+        });
+        await repository.AddRangeAsync(subJobs, ct);
     }
 }

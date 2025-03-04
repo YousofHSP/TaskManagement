@@ -6,17 +6,24 @@ using Presentation.Models;
 
 namespace Presentation.DTO;
 
-
-public class CustomerDto : BaseDto<CustomerDto, Customer>
+public class ProjectDto: BaseDto<ProjectDto, Project>
 {
     [Display(Name = "عنوان")]
     [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
     [Field(FieldType.Text)]
     public string Title { get; set; }
+
+    [Display(Name = "مشتری")]
+    [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Select)]
+    public int CustomerId { get; set; }
 }
-public class CustomerResDto: BaseDto<CustomerResDto, Customer>
+
+public class ProjectResDto : BaseDto<ProjectResDto, Project>
 {
     [Display(Name = "عنوان")]
     public string Title { get; set; }
-    
+
+    [Display(Name = "مشتری")]
+    public string CustomerTitle { get; set; }
 }

@@ -5,23 +5,25 @@
 @{
     ViewData["Title"] = "ایجاد " + Model.Title;
 
+    var jsFiles = ViewBag.JsFiles as List<string> ?? [];
+    var components = ViewBag.Components as List<string> ?? [];
     var properties = Model.Properties;
 }
 
-<div class="card">
-    <div class="card-body">
-        @if (Model.Error)
-        {
-            <div class="alert alert-danger">
-                @Html.ValidationSummary()
-            </div>
-        }
-        <form asp-action="Create" method="post">
+<form asp-action="Create" method="post">
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Error)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary()
+                </div>
+            }
             <div class="row">
                 @foreach (var property in properties)
                 {
                     var field = property.GetCustomAttribute<FieldAttribute>();
-                    if(field is null)
+                    if (field is null)
                         continue;
                     field.SetLabelFromProperty(property);
 
@@ -35,7 +37,8 @@
                                     <input class="form-control" type="text" name="@property.Name"/>
                                     break;
                                 case FieldType.Select:
-                                    <select class="form-control select2" name="@property.Name" asp-items="@Model.Options[property.Name]">
+                                    <select class="form-control select2" name="@property.Name"
+                                            asp-items="@Model.Options[property.Name]">
                                     </select>
                                     break;
                                 case FieldType.Time:
@@ -66,6 +69,21 @@
 
             </div>
             <button type="submit" class="btn btn-primary">ثبت</button>
-        </form>
+        </div>
     </div>
-</div>
+
+    @foreach (var component in components)
+    {
+        @await Html.PartialAsync(component)
+    }
+
+</form>
+
+@section Scripts{
+
+    
+    @foreach (var js in jsFiles)
+    {
+        <script src="@js"></script>
+    }
+}

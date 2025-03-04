@@ -10,7 +10,8 @@ public class Job:BaseEntity
 {
     public string Title { get; set; }
     public int UserId { get; set; }
-    public int CustomerId { get; set; }
+    public int? CustomerId { get; set; }
+    public int? ProjectId { get; set; }
     public int? ParentId { get; set; }
     public string? Description { get; set; } = "";
     public int EventId { get; set; }
@@ -21,7 +22,8 @@ public class Job:BaseEntity
     public Job? Parent { get; set; }
     public List<Job>? Children { get; set; } = [];
     public User User { get; set; } = null!;
-    public Customer Customer { get; set; } = null!;
+    public Customer? Customer { get; set; }
+    public Project? Project { get; set; }
     public Event Event { get; set; } = null!;
 }
 
@@ -45,5 +47,8 @@ public class JobConfiguration : IEntityTypeConfiguration<Job>
         builder.HasOne(j => j.Customer)
             .WithMany(c => c.Jobs)
             .HasForeignKey(j => j.CustomerId);
+        builder.HasOne(i => i.Project)
+            .WithMany(i => i.Jobs)
+            .HasForeignKey(i => i.ProjectId);
     }
 }

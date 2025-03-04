@@ -1,0 +1,43 @@
+@using Data.Contracts
+@using Entity
+@inject IRepository<User> UserRepository
+@inject IRepository<Event> EventRepository
+@{
+    var userSelectList = await UserRepository.GetSelectListItems(nameof(Entity.User.FullName), whereFunc: i => i.Id != 1);
+    var eventSelectList = await EventRepository.GetSelectListItems();
+}
+
+<div class="card mt-3">
+    <div class="card-body repeater-default">
+        <div class="col p-0">
+            <button class="btn btn-primary px-1" data-repeater-create type="button">
+                افزودن
+            </button>
+        </div>
+
+        <div data-repeater-list="SubJobs">
+            <div class="row" data-repeater-item>
+                <div class="col-3 form-group">
+                    <label>عنوان</label>
+                    <input type="text" class="form-control" name="Title">
+                </div>
+
+                <div class="col-3 form-group">
+                    <label>کاربر</label>
+                    <select name="UserId" class="form-control" asp-items="userSelectList"></select>
+                </div>
+                <div class="col-3 form-group">
+                    <label>فعالیت</label>
+                    <select name="EventId" class="form-control" asp-items="eventSelectList"></select>
+                </div>
+                <div
+                    class="col-md-2 col-2 form-group d-flex align-items-center pt-2">
+                    <button class="btn btn-danger text-nowrap px-1 rmv-btn" data-repeater-delete type="button">
+                        حذف
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>

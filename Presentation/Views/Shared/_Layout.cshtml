@@ -23,7 +23,8 @@
 <div class="topbar">
 	<div class="topbar-left">
 		<a href="/" class="logo">
-                <img src="~/images/taskmanagementlogo.jpg" style="width: 150px; height: 45px" alt="logo-large" class="logo-lg">
+			<img src="~/images/taskmanagementlogo.jpg" style="width: 150px; height: 45px" alt="logo-large"
+			     class="logo-lg">
 		</a>
 	</div>
 	<nav class="navbar-custom">
@@ -34,7 +35,6 @@
 				<a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-bs-toggle="dropdown" href="#"
 				   role="button"
 				   aria-haspopup="false" aria-expanded="false">
-					<img src="~/images/users/user-1.jpg" alt="profile-user" class="rounded-circle"/>
 					<span class="ml-1 nav-user-name hidden-sm">@userFullName <i
 							class="mdi mdi-chevron-down"></i> </span>
 				</a>
@@ -71,18 +71,33 @@
 <script src="~/js/site.js"></script>
 <script src="~/js/menu-config.js"></script>
 <script src="~/js/datepickerconfig.js"></script>
+<script src="~/js/jquery.repeater.min.js"></script>
 
 
 
 @await RenderSectionAsync("Scripts", required: false)
 
 <script>
+
 	$(".select2").select2({
 		width: "100%"
 	})
 	$(document).ready(function () {
 		$(".metismenu").metisMenu();
+
+
+		$('.repeater-default').repeater({
+			show: function () {
+				$(this).slideDown();
+
+			},
+			hide: function (deleteElement) {
+				$(this).slideUp(deleteElement);
+			},
+
+		});
 	})
+
 
 </script>
 </body>

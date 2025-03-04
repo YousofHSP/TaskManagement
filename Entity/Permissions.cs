@@ -10,6 +10,11 @@ public static class Permissions
         new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Edit",  ActionLabel = "ویرایش" },
         new() { Controller = "Customer", ControllerLabel = "مشتری", Action = "Delete", ActionLabel = "حذف" },
         
+        new() { Controller = "Project", ControllerLabel = "پروژه",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Project", ControllerLabel = "پروژه", Action = "Create",  ActionLabel = "ایجاد" },
+        new() { Controller = "Project", ControllerLabel = "پروژه", Action = "Edit",  ActionLabel = "ویرایش" },
+        new() { Controller = "Project", ControllerLabel = "پروژه", Action = "Delete", ActionLabel = "حذف" },
+        
         new() { Controller = "Role", ControllerLabel = "نقش",  Action = "Index", ActionLabel = "نمایش" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Create",  ActionLabel = "ایجاد" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Edit",  ActionLabel = "ویرایش" },

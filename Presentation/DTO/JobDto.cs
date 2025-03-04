@@ -23,15 +23,14 @@ public class JobDto:BaseDto<JobDto, Job>
     public int UserId { get; set; }
     
     [Display(Name = "مشتری")]
-    [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
     [Field(FieldType.Select)]
-    public int CustomerId { get; set; }
+    public int? CustomerId { get; set; }
     
-    [Display(Name = "فعالیت")]
-    [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Display(Name = "پروژه")]
     [Field(FieldType.Select)]
+    public int ProjectId { get; set; }
     
-    public int EventId { get; set; }
+    
     [Display(Name = "تاریخ شروع")]
     [Field(FieldType.DateTime)]
     public string? StartedAt { get; set; }
@@ -40,6 +39,10 @@ public class JobDto:BaseDto<JobDto, Job>
     [Field(FieldType.DateTime)]
     public string? EndedAt { get; set; }
 
+    [Display(Name = "فعالیت")]
+    [Required(ErrorMessage = "لطفا {0} را وارد کنید")]
+    [Field(FieldType.Select)]
+    public int EventId { get; set; }
     
     [Display(Name = "وضعیت")]
     [Field(FieldType.Select)]
@@ -48,6 +51,8 @@ public class JobDto:BaseDto<JobDto, Job>
     [Display(Name = "توضیحات")]
     [Field(FieldType.Text)]
     public string? Description { get; set; } = "";
+
+    public List<SubJobDto> SubJobs { get; set; } = [];
     protected override void CustomMappings(IMappingExpression<Job, JobDto> mapping)
     {
         mapping.ForMember(
@@ -75,6 +80,13 @@ public class JobDto:BaseDto<JobDto, Job>
     }
 }
 
+public class SubJobDto : BaseDto<SubJobDto, Job>
+{
+    public string Title { get; set; }
+    public int EventId { get; set; }
+    public int UserId { get; set; }
+}
+
 public class JobResDto: BaseDto<JobResDto, Job>
 {
     [Display(Name = "عنوان")]
@@ -83,6 +95,8 @@ public class JobResDto: BaseDto<JobResDto, Job>
     public string UserFullName { get; set; }
     [Display(Name = "مشتری")]
     public string CustomerTitle { get; set; }
+    [Display(Name = "پروژه")]
+    public string ProjectTitle { get; set; }
     [Display(Name = "فعالیت")]
     public string EventTitle { get; set; }
     [Display(Name = "توضیحات")]
