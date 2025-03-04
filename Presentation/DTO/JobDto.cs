@@ -28,7 +28,7 @@ public class JobDto:BaseDto<JobDto, Job>
     
     [Display(Name = "پروژه")]
     [Field(FieldType.Select)]
-    public int ProjectId { get; set; }
+    public int? ProjectId { get; set; }
     
     
     [Display(Name = "تاریخ شروع")]
@@ -109,8 +109,15 @@ public class JobResDto: BaseDto<JobResDto, Job>
     [Display(Name = "وضعیت")] 
     public JobStatus Status { get; set; }
 
+    [Display(Name = "تعداد زیرفعالیت")] 
+    public int SubJobsCount { get; set; }
     protected override void CustomMappings(IMappingExpression<Job, JobResDto> mapping)
     {
+        mapping.ForMember(
+            d => d.SubJobsCount,
+            s => s.MapFrom(m => m.Children.Count 
+            )
+        );
         mapping.ForMember(
             d => d.StartDateTime,
             s => s.MapFrom(m => m.StartDateTime != null ? m.StartDateTime.Value.ToShamsi() : ""
@@ -128,6 +135,8 @@ public class JobReportViewModel
 {
     [Display(Name = "مشتری")]
     public int? CustomerId { get; set; }
+    [Display(Name = "پروژه")]
+    public int? ProjectId { get; set; }
     [Display(Name = "کاربر")]
     public int? UserId { get; set; }
 

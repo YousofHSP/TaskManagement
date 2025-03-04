@@ -27,10 +27,11 @@ public class JobController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        SetIncludes(nameof(Job.Customer), nameof(Job.User), nameof(Job.Parent), nameof(Job.Event), nameof(Job.Project));
+        SetIncludes(nameof(Job.Customer), nameof(Job.User), nameof(Job.Event), nameof(Job.Project), nameof(Job.Children));
         AddJsFile("/js/components/changeModal.js", "index");
-        AddJsFile("/js/components/getProjectsByCustomer.js", "create");
+        AddJsFile("/js/components/getProjectsByCustomer.js", "create", "index");
         AddComponentFile("Components/SubTasks", "create");
+        AddComponentFile("Components/ChangeModal", "index");
         AddListAction("ثبت گزارش", "fa fa-arrow-circle-left", "", "open-modal");
 
         List<SelectListItem> users;
@@ -91,7 +92,18 @@ public class JobController(
                 ModelExtensions.ToDisplay<JobDto>(i => i.CustomerId),
                 FieldType.Select,
                 "",
-                customers
+                customers.Where(i => i.Value != "").ToList()
+            );
+            AddFilter(nameof(JobDto.ProjectId),
+                ModelExtensions.ToDisplay<JobDto>(i => i.ProjectId),
+                FieldType.Select,
+                "",
+                projects
+                    .Where(i => i.Value != "")
+                    .Select(i => { 
+                    i.Selected = false;
+                    return i;
+                }).ToList()
             );
             AddSum("جمع ساعات", i =>
             {
@@ -108,11 +120,15 @@ public class JobController(
         var jobsQuery = repository.TableNoTracking
             .Include(i => i.User)
             .Include(i => i.Customer)
+            .Include(i => i.Project)
             .AsQueryable();
         if (dto.UserId is not null)
             jobsQuery = jobsQuery.Where(i => i.UserId == dto.UserId);
         if (dto.CustomerId is not null)
             jobsQuery = jobsQuery.Where(i => i.CustomerId == dto.CustomerId);
+        if(dto.ProjectId is not null)
+            jobsQuery = jobsQuery.Where(i => i.ProjectId == dto.ProjectId);
+            
         if (!string.IsNullOrEmpty(dto.StartDateTime))
         {
             var startDateTime = dto.StartDateTime.ToGregorian();
@@ -198,5 +214,11 @@ public class JobController(
             EventId = i.EventId
         });
         await repository.AddRangeAsync(subJobs, ct);
+    }
+
+    public override async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        await repository.Table.Where(i => i.ParentId == id).ExecuteDeleteAsync(ct);
+        return await base.Delete(id, ct);
     }
 }

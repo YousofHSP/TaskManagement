@@ -39,20 +39,23 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     private Dictionary<string, List<string>?> Components = [];
     protected TEntity? Model { get; private set; }
 
-    protected void AddJsFile(string src, string place = "")
+    protected void AddJsFile(string src, params string[] places)
     {
-        if (!JsFiles.ContainsKey(place))
-            JsFiles.Add(place, []);
-        JsFiles[place].Add(src);
-        
+        foreach (var place in places)
+        {
+            if (!JsFiles.ContainsKey(place))
+                JsFiles.Add(place, []);
+            JsFiles[place].Add(src);
+        }
     }
+
     protected void AddComponentFile(string src, string place = "")
     {
         if (!Components.ContainsKey(place))
             Components.Add(place, []);
         Components[place].Add(src);
-        
     }
+
     protected void SetIncludes(params List<string> includes)
     {
         _includes = includes;
@@ -65,7 +68,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
     protected void AddListAction(string title, string cls, string url, string aClass = "", string rowUrl = "#")
     {
-        _indexViewModel.ListActions.Add(new() { Class = cls, Title = title, Url = url , AClass = aClass, RowUrl = rowUrl });
+        _indexViewModel.ListActions.Add(new()
+            { Class = cls, Title = title, Url = url, AClass = aClass, RowUrl = rowUrl });
     }
 
     protected void AddCondition(Expression<Func<TEntity, bool>> condition)
@@ -139,13 +143,15 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     public virtual async Task<ViewResult> Index(IndexDto model, CancellationToken ct)
     {
         await Configure("index", ct);
+        Components.TryGetValue("index", out var components);
+        ViewBag.Components = components ?? [];
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;
         if (CheckPermission.Check(User, $"{controllerName}.Create"))
             _indexViewModel.ViewSetting.Create = true;
         if (CheckPermission.Check(User, $"{controllerName}.Edit"))
             AddListAction("ویرایش", "fa fa-pencil", "Edit");
         if (CheckPermission.Check(User, $"{controllerName}.Delete"))
-            AddListAction("حذف", "fa fa-trash", "Delete");
+            AddListAction("حذف", "fa fa-trash", "Delete", "ask");
         var list = repository.TableNoTracking;
 
         if (_includes.Count != 0)
@@ -242,7 +248,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         }
 
         await repository.AddAsync(model, ct);
-        await AfterCreate(dto,model, ct);
+        await AfterCreate(dto, model, ct);
         return RedirectToAction(nameof(Index));
     }
 
@@ -278,7 +284,10 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         await repository.DeleteAsync(model, ct);
         return RedirectToAction(nameof(Index));
     }
-    public virtual async Task AfterCreate(TDto dto, TEntity model, CancellationToken ct) { }
+
+    public virtual async Task AfterCreate(TDto dto, TEntity model, CancellationToken ct)
+    {
+    }
 }
 
 public class BaseController<TDto, TResDto, TEntity>(IRepository<TEntity> repository, IMapper mapper)

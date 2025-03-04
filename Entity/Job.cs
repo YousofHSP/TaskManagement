@@ -20,7 +20,7 @@ public class Job:BaseEntity
     public JobStatus Status { get; set; }
 
     public Job? Parent { get; set; }
-    public List<Job>? Children { get; set; } = [];
+    public List<Job> Children { get; set; } = [];
     public User User { get; set; } = null!;
     public Customer? Customer { get; set; }
     public Project? Project { get; set; }

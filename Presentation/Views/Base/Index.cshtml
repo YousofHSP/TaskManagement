@@ -10,6 +10,7 @@
     var sums = ViewBag.Sums as Dictionary<string, string> ?? new();
     var filters = model.Filters as List<Field>;
     var jsFiles = ViewBag.JsFiles as List<string> ?? [];
+    var components = ViewBag.Components as List<string> ?? [];
     ViewData["Title"] = "لیست " + Model.Title;
 }
 
@@ -162,7 +163,10 @@
 
     </div>
 
-    <partial name="Components/ChangeModal"/>
+    @foreach (var component in components)
+    {
+        <partial name="@component"/>
+    }
 </div>
 
 @section Scripts{
@@ -171,4 +175,22 @@
     {
         <script src="@js"></script>
     }
+    <script>
+        $(".ask").click(function (e) {
+            e.preventDefault()
+            Swal.fire({
+                title: 'آیا مطمئن هستید ؟',
+                text: "پس از تایید امکان بازگشت این عملیات وجود ندارد.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'تایید',
+                cancelButtonText: 'لغو',
+            }).then(res => {
+                if (res.value){
+                    window.location.href = $(this).attr("href")
+                }
+            })
+
+        })
+    </script>
 }
