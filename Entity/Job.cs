@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Entity.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,7 +21,9 @@ public class Job:BaseEntity
     public DateTime? EndDateTime { get; set; }
     public JobStatus Status { get; set; }
 
+    [IgnoreDataMember]
     public Job? Parent { get; set; }
+    [IgnoreDataMember]
     public List<Job> Children { get; set; } = [];
     public User User { get; set; } = null!;
     public Customer? Customer { get; set; }
@@ -50,5 +54,8 @@ public class JobConfiguration : IEntityTypeConfiguration<Job>
         builder.HasOne(i => i.Project)
             .WithMany(i => i.Jobs)
             .HasForeignKey(i => i.ProjectId);
+        builder.HasMany(i => i.Children)
+            .WithOne(i => i.Parent)
+            .HasForeignKey(i => i.ParentId);
     }
 }

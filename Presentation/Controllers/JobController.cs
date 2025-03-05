@@ -180,38 +180,67 @@ public class JobController(
     [HttpGet]
     public async Task<JobDto> GetInfo(int id, CancellationToken ct)
     {
-        var model = await repository.TableNoTracking.Where(i => i.Id == id).FirstOrDefaultAsync(ct);
+        var model = await repository.TableNoTracking
+            .Where(i => i.Id == id)
+            .Include(i => i.Children)
+            .FirstOrDefaultAsync(ct);
         if (model is null)
             throw new NotFoundException("تسک پیدا نشد");
         var dto = mapper.Map<JobDto>(model);
         dto.StartedAt = model.StartDateTime?.ToShamsi() ?? "";
         dto.EndedAt = model.EndDateTime?.ToShamsi() ?? "";
+        foreach (var item in model.Children)
+        {
+            dto.SubJobs.Add(new SubJobDto
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Status= item.Status,
+                StartedAt = item.StartDateTime.ToString() ?? "",
+                EndedAt = item.EndDateTime.ToString() ?? "",
+                UserId = item.UserId
+            });
+
+        }
         return dto;
     }
 
+    [HttpPost]
     public async Task<IActionResult> QuickUpdate(JobQuickUpdateDto dto, CancellationToken ct)
     {
-        var model = await repository.GetByIdAsync(ct, dto.Id);
+        var model = await repository.Entities.Include(i => i.Children).Where(i => i.Id == dto.Id).FirstOrDefaultAsync(ct);
         if (model is null)
             throw new NotFoundException("تسک پیدا نشد");
         model.Status = dto.Status;
         model.StartDateTime = dto.StartedAt.ToGregorian();
         model.EndDateTime = dto.EndedAt.ToGregorian();
         await repository.UpdateAsync(model, ct);
+
+        foreach (var item in dto.SubJobs)
+        {
+            var subModel = model.Children.First(i => i.Id == item.Id);
+            subModel.Title = item.Title;
+            subModel.Status = item.Status.Value;
+            subModel.StartDateTime = item.StartedAt.ToGregorian();
+            subModel.EndDateTime = item.EndedAt.ToGregorian();
+            
+        }
+        await repository.UpdateRangeAsync(model.Children, ct);
+        
         return Ok();
     }
 
     public override async Task AfterCreate(JobDto dto, Job model, CancellationToken ct)
     {
-        var subJobs = dto.SubJobs.Select(i => new Job
+        var subJobs = dto.SubJobs.Where(i => !string.IsNullOrEmpty(i.Title)).Select(i => new Job
         {
-            UserId = i.UserId,
+            UserId = i.UserId.Value,
             Title = i.Title,
             CreatedAt = DateTimeOffset.Now,
             CustomerId = model.CustomerId,
             ProjectId = model.ProjectId,
             ParentId = model.Id,
-            EventId = i.EventId
+            EventId = i.EventId.Value
         });
         await repository.AddRangeAsync(subJobs, ct);
     }

@@ -51,7 +51,7 @@
                                     <input class="form-control" type="time" name="@property.Name" value="@field.Value"/>
                                     break;
                                 case FieldType.DateTime:
-                                    <input class="form-control date-picker" type="text" name="@property.Name" value="@field.Value"/>
+                                    <input class="form-control date-picker" type="text" autocomplete="off" name="@property.Name" value="@field.Value"/>
                                     break;
                                 case FieldType.MultiSelect:
                                     <select class="form-control select2" multiple name="@(property.Name)[]"

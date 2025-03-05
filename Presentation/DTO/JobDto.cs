@@ -82,9 +82,12 @@ public class JobDto:BaseDto<JobDto, Job>
 
 public class SubJobDto : BaseDto<SubJobDto, Job>
 {
-    public string Title { get; set; }
-    public int EventId { get; set; }
-    public int UserId { get; set; }
+    public string? Title { get; set; }
+    public int? EventId { get; set; }
+    public int? UserId { get; set; }
+    public string? StartedAt { get; set; }
+    public string? EndedAt { get; set; }
+    public JobStatus? Status { get; set; }
 }
 
 public class JobResDto: BaseDto<JobResDto, Job>
@@ -153,5 +156,6 @@ public class JobQuickUpdateDto: BaseDto<JobQuickUpdateDto, Job>
     public JobStatus Status { get; set; }
     public string StartedAt { get; set; }
     public string EndedAt { get; set; }
-    
+    public List<SubJobDto> SubJobs { get; set; } = [];
+
 }

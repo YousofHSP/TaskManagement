@@ -244,6 +244,11 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
             CreateViewModel.Properties = typeof(TDto).GetProperties();
             CreateViewModel.Options = Options;
             CreateViewModel.Error = true;
+
+            JsFiles.TryGetValue("create", out var jsFiles);
+            ViewBag.JsFiles = jsFiles ?? [];
+            Components.TryGetValue("create", out var components);
+            ViewBag.Components = components ?? [];
             return View("~/Views/Base/Create.cshtml", CreateViewModel);
         }
 
