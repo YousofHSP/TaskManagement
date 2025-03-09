@@ -4,6 +4,16 @@
 @{
     ViewData["Title"] = "ایجاد نقش";
 }
+@section Styles
+{
+    <link href="~/plugins/treeview/themes/default/style.css" rel="stylesheet">
+    <link href="~/plugins/treeview/file-explore.css" rel="stylesheet">
+    <style>
+        li{
+            list-style-type: none;
+        }
+    </style>
+}
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -35,30 +45,42 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <div class="row">
-                            @foreach (var permissions in Permissions.All.GroupBy(i => i.Controller))
-                            {
-                                <div class="col-12 form-check">
-                                    <input class="form-check-input" style="margin-left: 10px; float: right"
-                                           name="PermissionController" value="@(permissions.First().Controller)"
-                                           type="checkbox"/>
-                                    <label class="form-check-label"
-                                           style="font-size: 16px; color: black"><strong>@permissions.First().ControllerLabel</strong></label>
-                                </div>
-                                @foreach (var permission in permissions)
-                                {
-                                    var permissionKey = $"{permission.Controller}.{permission.Action}";
-                                    <div class="col-md-3 mt-2 form-check">
-                                        <input class="ml-1 form-check-input" style="margin-left: 10px; float: right"
-                                               name="Permissions" value="@permissionKey" id="@permissionKey"
-                                               type="checkbox"/>
-                                        <label for="@permissionKey"
-                                               class="form-check-label">@permission.ActionLabel</label>
-                                    </div>
-                                }
+                            <div class="tree_main">
+                                <ul id="bs_main" class="main_ul">
+                                    @foreach (var permissions in Permissions.All.GroupBy(i => i.Controller))
+                                    {
+                                        <li>
 
-                                <hr/>
-                            }
+                                            <div style="cursor: pointer" class="parent-row row">
+                                                <div class="form-check" style="width: 80px">
+                                                    <input class="form-check-input" style="margin-left: 10px; float: right"
+                                                           name="PermissionController" value="@(permissions.First().Controller)"
+                                                           type="checkbox"/>
+                                                    <label class="form-check-label parent" style="font-size: 16px; color: black; cursor: pointer">
+                                                        <strong>@permissions.First().ControllerLabel</strong>
+                                                    </label>
+                                                </div>
+                                                <span class="col parent"><i class="mdi mdi-chevron-left"></i></span>
+                                            </div>
+                                            <ul class="sub_ul">
+                                                @foreach (var permission in permissions)
+                                                {
+                                                    var permissionKey = $"{permission.Controller}.{permission.Action}";
+                                                    <li class="form-check">
+                                                        <input class="ml-1 form-check-input" style="margin-left: 10px; float: right"
+                                                               name="Permissions" value="@permissionKey" id="@permissionKey"
+                                                               type="checkbox"/>
+                                                        <label for="@permissionKey"
+                                                               class="form-check-label">@permission.ActionLabel</label>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="form-group">
@@ -78,6 +100,18 @@
                 $(`input[name=Permissions][value^=${controller}]`).prop("checked", true)
             else
                 $(`input[name=Permissions][value^=${controller}]`).prop("checked", false)
+        })
+        $(document).ready(function (){
+
+            $(".sub_ul").hide()
+        })
+        $(".parent").click(function (){
+            $(this).parents(".parent-row").find(".sub_ul").slideToggle();
+            let el = $(this).parent().find(".mdi")
+            if (el.hasClass("mdi-chevron-left"))
+                el.removeClass("mdi-chevron-left").addClass("mdi-chevron-down")
+            else 
+                el.removeClass("mdi-chevron-down").addClass("mdi-chevron-left")
         })
     </script>
 }

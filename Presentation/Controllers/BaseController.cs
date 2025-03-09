@@ -77,14 +77,14 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         _conditions.Add(condition);
     }
 
-    protected void SetTitle(string title)
+    private void SetTitle(string title)
     {
         _indexViewModel.Title = title;
         CreateViewModel.Title = title;
         EditViewModel.Title = title;
     }
 
-    protected void AddColumn(string name, string value)
+    private void AddColumn(string name, string value)
     {
         Columns.Add(new Column { Name = name, Value = value });
     }
@@ -99,7 +99,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         });
     }
 
-    protected void AddField(string name, string label, FieldType type = FieldType.Text, string value = "",
+    private void AddField(string name, string label, FieldType type = FieldType.Text, string value = "",
         List<SelectListItem>? items = null)
     {
         items ??= [];
